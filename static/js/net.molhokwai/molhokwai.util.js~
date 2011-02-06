@@ -1,0 +1,709 @@
+molhokwai['util'] =
+{
+  /* requires:
+    - ACD script in page 
+    - JQuery form plug in
+  */
+  acd : {
+    //<!-- 	utility_functions
+    get_query_string_for_acd : function(form_id) {
+      // get all the inputs, selects, textareas into arrays.
+      var $inputs = $('#'+form_id+' :input');
+      var $selects = $('#'+form_id+' select');
+      var $texteareas = $('#'+form_id+' textearea');
+
+      // get an associative array of the escaped values.
+      try{
+	      var values = {};
+	      $inputs.each(function() {
+		      values[this.name] = escape($(this).val());
+	      });
+	      $selects.each(function() {
+		      values[this.name] = escape($(this).val());
+	      });
+	      $texteareas.each(function() {
+		      values[this.name] = escape($(this).val());
+	      });
+      }
+      catch(e){
+	      alert(e.description);
+      }
+
+      var acd_query_string='';
+      var i=0;
+      for(k in values){ 
+	      if (i>0) { acd_query_string+='&amp;'; }
+	      else { i++; }
+	      acd_query_string+=k+'='+values[k];
+      }
+
+      return acd_query_string;
+    },
+    
+    inc : 0,
+    
+    delayed_result : function(user_msg_element_id){
+        if (document.getElementById(user_msg_element_id)) {
+          try{
+	          document.getElementById(user_msg_element_id).innerHTML+=ACD.responseText;
+	          if (ACD.error && ACD.error!=''){
+		          document.getElementById(user_msg_element_id).innerHTML='An error occured. Retry, or contact the administrator (admin@molhokwai.net).';
+	          }
+
+          }
+          catch(e){
+	          if (molhokwai.acd.inc<10){
+		          setTimeout('delayed_result();',1000);
+		          document.getElementById(user_msg_element_id).innerHTML+='.';
+		          molhokwai.acd.inc++;
+	          }
+	          else{
+		          document.getElementById(user_msg_element_id).innerHTML='...this is taking too long. Retry, or contact the administrator (admin@molhokwai.net).';
+	          }
+
+          }
+        }
+    },
+    //	end #utility_functions -->
+
+    //<!-- 	process_functions
+    ajax_submit : function(form_id, post_uri,description_element_id,acd_script_element_id,user_msg_element_id){
+      var queryString = $('#'+form_id+'').formSerialize();
+      var url='http://www.ajax-cross-domain.com/cgi-bin/ACD/ACD.js?uri=';
+      var post_uri='http://creator.zoho.com/api/json/molhokwai.zoho/target/add/';
+      var uri='('+post_uri+')&amp;method=post&amp;postdata=('+molhokwai.acd.get_query_string_for_acd(form_id)+')';
+
+      document.getElementById(description_element_id).innerHTML=url+uri;
+      document.getElementById(acd_script_element_id).setAttribute("src", url+uri);
+      document.getElementById(user_msg_element_id).innerHTML='processing, please wait... this might take a few seconds';
+
+      molhokwai.acd.delayed_result();
+    }
+    //	end #process_functions -->
+  },
+
+  url :
+  {
+    sections :
+	  {
+		  get :
+			  function()
+			  {
+				  return window.location.pathname.split('/');
+			  },
+		  getLast :
+			  function()
+			  {
+				  try
+				  {
+					  var secs=molhokwai.util.url.sections.get();
+					  if (molhokwai.util.objects.object.isArray(secs))
+						  if (secs.length>0)
+							  return secs[secs.length-1];
+					  else
+						  return secs;
+				  }
+				  catch(e)
+				  {
+					  return "";
+				  }
+			  }
+	  },
+
+	  parameter :
+    {
+      get :
+        function ( name )
+        {
+          name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+          var regexS = "[\\?&]"+name+"=([^&#]*)";
+          var regex = new RegExp( regexS );
+          var results = regex.exec( window.location.href );
+          if( results != null )
+            return results[1];
+          else
+		  {
+			return null;
+		  }
+        },
+
+      replace :
+        function ( name, value )
+        {
+          var s = window.location.href.replace(
+            '&' + name + '=' + molhokwai.util.url.parameter.get(name), '&' + name + '=' + value);
+          s = s.replace(
+            '?' + name + '=' + molhokwai.util.url.parameter.get(name), '?' + name + '=' + value);
+          return s;
+        },
+
+      set :
+        function( name, value )
+        {
+          if (molhokwai.util.url.parameter.get(name))
+          {
+            return molhokwai.util.url.parameter.replace(name, value);
+          }
+          else
+          {
+            var sep = '?';
+			var params=molhokwai.util.url.parameters.get()
+			var isEmpty=true;
+			for(k in params) isEmpty=false;
+            if (!isEmpty){ sep = '&'; }
+            return window.location.href + sep + name + '=' + value;
+          }
+        }
+    },
+
+	  parameters :
+    {
+      get :
+        function (url)
+        {
+          var urlVar = null;
+          if (!url)
+          {
+            urlVar = window.location.href;
+          }
+          var paramsUrl=[];
+		  if (urlVar.indexOf("?")>0)
+			paramsUrl = urlVar.substring(urlVar.indexOf("?")+1, urlVar.length).split("&");
+          var params = {};
+          for(var i =0; i<paramsUrl.length; i++)
+          {
+            params[paramsUrl[i].split("=")[0]] = paramsUrl[i].split("=")[1];
+          }
+          return params;
+        }
+    },
+
+    domain :
+    {
+      /** subdomain **/
+      sub :
+      {
+        get :
+          function(url)
+          {
+            return (new RegExp( "http://([^\.]*)" )).exec(url)[1];
+          }
+      }
+    },
+
+    /**
+    *
+    *  URL encode / decode
+    *  http://www.webtoolkit.info/
+    *
+    **/
+    /***	public	****/
+    encode :
+      function (string)
+      {
+        return escape(this._utf8_encode(string));
+      },
+
+    /***	public	****/
+    decode :
+      function (string)
+      {
+        return this._utf8_decode(unescape(string));
+      },
+
+    /***	private	****/
+    _utf8_encode :
+      function (string)
+      {
+        string = string.replace(/\r\n/g,"\n");
+        var utftext = "";
+
+        for (var n = 0; n < string.length; n++) {
+
+          var c = string.charCodeAt(n);
+
+          if (c < 128) {
+            utftext += String.fromCharCode(c);
+          }
+          else if((c > 127) && (c < 2048)) {
+            utftext += String.fromCharCode((c >> 6) | 192);
+            utftext += String.fromCharCode((c & 63) | 128);
+          }
+          else {
+            utftext += String.fromCharCode((c >> 12) | 224);
+            utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+            utftext += String.fromCharCode((c & 63) | 128);
+          }
+
+        }
+
+        return utftext;
+      },
+
+    /***	private	****/
+    _utf8_decode :
+      function (utftext)
+      {
+        var string = "";
+        var i = 0;
+        var c = c1 = c2 = 0;
+
+        while ( i < utftext.length ) {
+
+          c = utftext.charCodeAt(i);
+
+          if (c < 128) {
+            string += String.fromCharCode(c);
+            i++;
+          }
+          else if((c > 191) && (c < 224)) {
+            c2 = utftext.charCodeAt(i+1);
+            string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+            i += 2;
+          }
+          else {
+            c2 = utftext.charCodeAt(i+1);
+            c3 = utftext.charCodeAt(i+2);
+            string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+            i += 3;
+          }
+
+        }
+        return string;
+      }
+  },
+
+  cookies :
+  {
+  },
+
+  cookie :
+  {
+    write :
+      /****
+        @param name
+        @param value
+        @param expiration optional (in days)
+      ****/
+      function (name, value, days)
+      {
+        if (days)
+        {
+          var date = new Date();
+          date.setTime(date.getTime()+(days*24*60*60*1000));
+          var expires = "; expires="+date.toGMTString();
+        }
+        else var expires = "";
+
+        document.cookie = name+"="+value+expires+"; path=/";
+      },
+
+    read :
+      /****
+        @param name
+      ****/
+      function (name)
+      {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+
+        for(var i=0;i < ca.length;i++)
+        {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1,c.length);
+          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+      },
+
+    erase :
+      /****
+        @param name
+      ****/
+      function (name)
+      {
+        molhokwai.util.cookie.write(name,"",-1);
+      }
+  },
+
+
+  /****
+    * ._value references the current window
+  ****/
+  window :
+  {
+    _value : window,
+    document :
+    {
+      links :
+      {
+        replace:
+          function(regExpMatch, replaceCallback)
+          {
+            throw 'molhokwai.util.document.links.replace function not implemented...';
+          }
+      },
+
+      event :
+      {
+        target :
+        {
+          get :
+            /*** from http://www.quirksmode.org/js/events_properties.html **/
+            function(e)
+            {
+              var targ;
+              if (!e) var e = window.event;
+              if (e.target) targ = e.target;
+              else if (e.srcElement) targ = e.srcElement;
+              if (targ.nodeType == 3) // defeat Safari bug
+                targ = targ.parentNode;
+
+              return targ;
+            },
+
+          cancel :
+            /*** from http://www.quirksmode.org/js/introevents.html **/
+            function(e)
+            {
+              e.cancelBubble = true;
+              if (e.stopPropagation) e.stopPropagation();
+            }
+        }
+      }
+    }
+  },
+
+  /****
+    *
+  ****/
+  display :
+  {
+    element :
+    {
+      showHide :
+        function(elementId,textElementId)
+        {
+          if (document.getElementById(elementId).style.display == 'none')
+          {
+            document.getElementById(elementId).style.display = 'block';
+            document.getElementById(textElementId).innerHTML = 'hide';
+          }
+          else
+          {
+            document.getElementById(elementId).style.display = 'none';
+            document.getElementById(textElementId).innerHTML = 'show';
+          }
+        }
+    }
+  },
+
+  controls :
+  {
+  	element :
+	{
+		disable :
+			function(elementId){
+				$jQuery("#"+elementId).attr("disabled",true);
+			},
+		enable :
+			function(elementId){
+				$jQuery("#"+elementId).removeAttr("disabled");
+			}
+	},
+	
+	events : 	
+	{
+		trigger : 
+			function(elementId,evenName){
+				$jQuery("#"+elementId).trigger(eventName);
+			}
+	},
+
+  	textarea :
+	{
+		lines :
+		{
+			get :
+				function (element)
+				{
+					var lines;
+					var TA=element.value;
+					if(document.all)// IE
+					{
+						lines=TA.split("\r\n");
+					}
+					else // Mozilla
+					{
+						lines=TA.split("\n");
+					}
+					return lines;
+				}
+		}
+	}
+  },
+
+  objects :
+  {
+  	object:{
+		isArray:
+			function(obj)
+			{
+				return obj.constructor.toString().indexOf("Array")>-1;
+			},
+		isObject:
+			function(obj)
+			{
+				return obj.constructor.toString().indexOf("Object")>-1;
+			}
+	}
+  },
+
+  html :
+  {
+	/** source: http://www.wikistuce.info/doku.php/javascript/htmlentites_et_html_entity_decode_comme_en_php#%5B1%5D **/
+	encode :
+		function(text) {
+			text = text.replace(/"/g,'&quot;'); // 34 22
+			text = text.replace(/&/g,'&amp;'); // 38 26
+			text = text.replace(/\'/g,'&#39;'); // 39 27
+			text = text.replace(/</g,'&lt;'); // 60 3C
+			text = text.replace(/>/g,'&gt;'); // 62 3E
+			text = text.replace(/\^/g,'&circ;'); // 94 5E
+			text = text.replace(/�/g,'&lsquo;'); // 145 91
+			text = text.replace(/�/g,'&rsquo;'); // 146 92
+			text = text.replace(/�/g,'&ldquo;'); // 147 93
+			text = text.replace(/�/g,'&rdquo;'); // 148 94
+			text = text.replace(/�/g,'&bull;'); // 149 95
+			text = text.replace(/�/g,'&ndash;'); // 150 96
+			text = text.replace(/�/g,'&mdash;'); // 151 97
+			text = text.replace(/�/g,'&tilde;'); // 152 98
+			text = text.replace(/�/g,'&trade;'); // 153 99
+			text = text.replace(/�/g,'&scaron;'); // 154 9A
+			text = text.replace(/�/g,'&rsaquo;'); // 155 9B
+			text = text.replace(/�/g,'&oelig;'); // 156 9C
+			text = text.replace(/�/g,'&#357;'); // 157 9D
+			text = text.replace(/�/g,'&#382;'); // 158 9E
+			text = text.replace(/�/g,'&Yuml;'); // 159 9F
+			text = text.replace(/ /g,'&nbsp;'); // 160 A0
+			text = text.replace(/�/g,'&iexcl;'); // 161 A1
+			text = text.replace(/�/g,'&cent;'); // 162 A2
+			text = text.replace(/�/g,'&pound;'); // 163 A3
+			text = text.replace(/ /g,'&curren;'); // 164 A4
+			text = text.replace(/�/g,'&yen;'); // 165 A5
+			text = text.replace(/�/g,'&brvbar;'); // 166 A6
+			text = text.replace(/�/g,'&sect;'); // 167 A7
+			text = text.replace(/�/g,'&uml;'); // 168 A8
+			text = text.replace(/�/g,'&copy;'); // 169 A9
+			text = text.replace(/�/g,'&ordf;'); // 170 AA
+			text = text.replace(/�/g,'&laquo;'); // 171 AB
+			text = text.replace(/�/g,'&not;'); // 172 AC
+			text = text.replace(/�/g,'&shy;'); // 173 AD
+			text = text.replace(/�/g,'&reg;'); // 174 AE
+			text = text.replace(/�/g,'&macr;'); // 175 AF
+			text = text.replace(/�/g,'&deg;'); // 176 B0
+			text = text.replace(/�/g,'&plusmn;'); // 177 B1
+			text = text.replace(/�/g,'&sup2;'); // 178 B2
+			text = text.replace(/�/g,'&sup3;'); // 179 B3
+			text = text.replace(/�/g,'&acute;'); // 180 B4
+			text = text.replace(/�/g,'&micro;'); // 181 B5
+			text = text.replace(/�/g,'&para'); // 182 B6
+			text = text.replace(/�/g,'&middot;'); // 183 B7
+			text = text.replace(/�/g,'&cedil;'); // 184 B8
+			text = text.replace(/�/g,'&sup1;'); // 185 B9
+			text = text.replace(/�/g,'&ordm;'); // 186 BA
+			text = text.replace(/�/g,'&raquo;'); // 187 BB
+			text = text.replace(/�/g,'&frac14;'); // 188 BC
+			text = text.replace(/�/g,'&frac12;'); // 189 BD
+			text = text.replace(/�/g,'&frac34;'); // 190 BE
+			text = text.replace(/�/g,'&iquest;'); // 191 BF
+			text = text.replace(/�/g,'&Agrave;'); // 192 C0
+			text = text.replace(/�/g,'&Aacute;'); // 193 C1
+			text = text.replace(/�/g,'&Acirc;'); // 194 C2
+			text = text.replace(/�/g,'&Atilde;'); // 195 C3
+			text = text.replace(/�/g,'&Auml;'); // 196 C4
+			text = text.replace(/�/g,'&Aring;'); // 197 C5
+			text = text.replace(/�/g,'&AElig;'); // 198 C6
+			text = text.replace(/�/g,'&Ccedil;'); // 199 C7
+			text = text.replace(/�/g,'&Egrave;'); // 200 C8
+			text = text.replace(/�/g,'&Eacute;'); // 201 C9
+			text = text.replace(/�/g,'&Ecirc;'); // 202 CA
+			text = text.replace(/�/g,'&Euml;'); // 203 CB
+			text = text.replace(/�/g,'&Igrave;'); // 204 CC
+			text = text.replace(/�/g,'&Iacute;'); // 205 CD
+			text = text.replace(/�/g,'&Icirc;'); // 206 CE
+			text = text.replace(/�/g,'&Iuml;'); // 207 CF
+			text = text.replace(/�/g,'&ETH;'); // 208 D0
+			text = text.replace(/�/g,'&Ntilde;'); // 209 D1
+			text = text.replace(/�/g,'&Ograve;'); // 210 D2
+			text = text.replace(/�/g,'&Oacute;'); // 211 D3
+			text = text.replace(/�/g,'&Ocirc;'); // 212 D4
+			text = text.replace(/�/g,'&Otilde;'); // 213 D5
+			text = text.replace(/�/g,'&Ouml;'); // 214 D6
+			text = text.replace(/�/g,'&times;'); // 215 D7
+			text = text.replace(/�/g,'&Oslash;'); // 216 D8
+			text = text.replace(/�/g,'&Ugrave;'); // 217 D9
+			text = text.replace(/�/g,'&Uacute;'); // 218 DA
+			text = text.replace(/�/g,'&Ucirc;'); // 219 DB
+			text = text.replace(/�/g,'&Uuml;'); // 220 DC
+			text = text.replace(/�/g,'&Yacute;'); // 221 DD
+			text = text.replace(/�/g,'&THORN;'); // 222 DE
+			text = text.replace(/�/g,'&szlig;'); // 223 DF
+			text = text.replace(/�/g,'&agrave;'); // 224 E0
+			text = text.replace(/�/g,'&aacute;'); // 225 E1
+			text = text.replace(/�/g,'&acirc;'); // 226 E2
+			text = text.replace(/�/g,'&atilde;'); // 227 E3
+			text = text.replace(/�/g,'&auml;'); // 228 E4
+			text = text.replace(/�/g,'&aring;'); // 229 E5
+			text = text.replace(/�/g,'&aelig;'); // 230 E6
+			text = text.replace(/�/g,'&ccedil;'); // 231 E7
+			text = text.replace(/�/g,'&egrave;'); // 232 E8
+			text = text.replace(/�/g,'&eacute;'); // 233 E9
+			text = text.replace(/�/g,'&ecirc;'); // 234 EA
+			text = text.replace(/�/g,'&euml;'); // 235 EB
+			text = text.replace(/�/g,'&igrave;'); // 236 EC
+			text = text.replace(/�/g,'&iacute;'); // 237 ED
+			text = text.replace(/�/g,'&icirc;'); // 238 EE
+			text = text.replace(/�/g,'&iuml;'); // 239 EF
+			text = text.replace(/�/g,'&eth;'); // 240 F0
+			text = text.replace(/�/g,'&ntilde;'); // 241 F1
+			text = text.replace(/�/g,'&ograve;'); // 242 F2
+			text = text.replace(/�/g,'&oacute;'); // 243 F3
+			text = text.replace(/�/g,'&ocirc;'); // 244 F4
+			text = text.replace(/�/g,'&otilde;'); // 245 F5
+			text = text.replace(/�/g,'&ouml;'); // 246 F6
+			text = text.replace(/�/g,'&divide;'); // 247 F7
+			text = text.replace(/�/g,'&oslash;'); // 248 F8
+			text = text.replace(/�/g,'&ugrave;'); // 249 F9
+			text = text.replace(/�/g,'&uacute;'); // 250 FA
+			text = text.replace(/�/g,'&ucirc;'); // 251 FB
+			text = text.replace(/�/g,'&uuml;'); // 252 FC
+			text = text.replace(/�/g,'&yacute;'); // 253 FD
+			text = text.replace(/�/g,'&thorn;'); // 254 FE
+			text = text.replace(/�/g,'&yuml;'); // 255 FF
+			return text;
+		},
+
+	decode :
+		function html_entity_decode(text) {
+			text = text.replace(/&quot;/g,'"'); // 34 22
+			text = text.replace(/&amp;/g,'&'); // 38 26
+			text = text.replace(/&#39;/g,"'"); // 39 27
+			text = text.replace(/&lt;/g,'<'); // 60 3C
+			text = text.replace(/&gt;/g,'>'); // 62 3E
+			text = text.replace(/&circ;/g,'^'); // 94 5E
+			text = text.replace(/&lsquo;/g,'�'); // 145 91
+			text = text.replace(/&rsquo;/g,'�'); // 146 92
+			text = text.replace(/&ldquo;/g,'�'); // 147 93
+			text = text.replace(/&rdquo;/g,'�'); // 148 94
+			text = text.replace(/&bull;/g,'�'); // 149 95
+			text = text.replace(/&ndash;/g,'�'); // 150 96
+			text = text.replace(/&mdash;/g,'�'); // 151 97
+			text = text.replace(/&tilde;/g,'�'); // 152 98
+			text = text.replace(/&trade;/g,'�'); // 153 99
+			text = text.replace(/&scaron;/g,'�'); // 154 9A
+			text = text.replace(/&rsaquo;/g,'�'); // 155 9B
+			text = text.replace(/&oelig;/g,'�'); // 156 9C
+			text = text.replace(/&#357;/g,'�'); // 157 9D
+			text = text.replace(/&#382;/g,'�'); // 158 9E
+			text = text.replace(/&Yuml;/g,'�'); // 159 9F
+			text = text.replace(/&nbsp;/g,' '); // 160 A0
+			text = text.replace(/&iexcl;/g,'�'); // 161 A1
+			text = text.replace(/&cent;/g,'�'); // 162 A2
+			text = text.replace(/&pound;/g,'�'); // 163 A3
+			text = text.replace(/&curren;/g,' '); // 164 A4
+			text = text.replace(/&yen;/g,'�'); // 165 A5
+			text = text.replace(/&brvbar;/g,'�'); // 166 A6
+			text = text.replace(/&sect;/g,'�'); // 167 A7
+			text = text.replace(/&uml;/g,'�'); // 168 A8
+			text = text.replace(/&copy;/g,'�'); // 169 A9
+			text = text.replace(/&ordf;/g,'�'); // 170 AA
+			text = text.replace(/&laquo;/g,'�'); // 171 AB
+			text = text.replace(/&not;/g,'�'); // 172 AC
+			text = text.replace(/&shy;/g,'�'); // 173 AD
+			text = text.replace(/&reg;/g,'�'); // 174 AE
+			text = text.replace(/&macr;/g,'�'); // 175 AF
+			text = text.replace(/&deg;/g,'�'); // 176 B0
+			text = text.replace(/&plusmn;/g,'�'); // 177 B1
+			text = text.replace(/&sup2;/g,'�'); // 178 B2
+			text = text.replace(/&sup3;/g,'�'); // 179 B3
+			text = text.replace(/&acute;/g,'�'); // 180 B4
+			text = text.replace(/&micro;/g,'�'); // 181 B5
+			text = text.replace(/&para/g,'�'); // 182 B6
+			text = text.replace(/&middot;/g,'�'); // 183 B7
+			text = text.replace(/&cedil;/g,'�'); // 184 B8
+			text = text.replace(/&sup1;/g,'�'); // 185 B9
+			text = text.replace(/&ordm;/g,'�'); // 186 BA
+			text = text.replace(/&raquo;/g,'�'); // 187 BB
+			text = text.replace(/&frac14;/g,'�'); // 188 BC
+			text = text.replace(/&frac12;/g,'�'); // 189 BD
+			text = text.replace(/&frac34;/g,'�'); // 190 BE
+			text = text.replace(/&iquest;/g,'�'); // 191 BF
+			text = text.replace(/&Agrave;/g,'�'); // 192 C0
+			text = text.replace(/&Aacute;/g,'�'); // 193 C1
+			text = text.replace(/&Acirc;/g,'�'); // 194 C2
+			text = text.replace(/&Atilde;/g,'�'); // 195 C3
+			text = text.replace(/&Auml;/g,'�'); // 196 C4
+			text = text.replace(/&Aring;/g,'�'); // 197 C5
+			text = text.replace(/&AElig;/g,'�'); // 198 C6
+			text = text.replace(/&Ccedil;/g,'�'); // 199 C7
+			text = text.replace(/&Egrave;/g,'�'); // 200 C8
+			text = text.replace(/&Eacute;/g,'�'); // 201 C9
+			text = text.replace(/&Ecirc;/g,'�'); // 202 CA
+			text = text.replace(/&Euml;/g,'�'); // 203 CB
+			text = text.replace(/&Igrave;/g,'�'); // 204 CC
+			text = text.replace(/&Iacute;/g,'�'); // 205 CD
+			text = text.replace(/&Icirc;/g,'�'); // 206 CE
+			text = text.replace(/&Iuml;/g,'�'); // 207 CF
+			text = text.replace(/&ETH;/g,'�'); // 208 D0
+			text = text.replace(/&Ntilde;/g,'�'); // 209 D1
+			text = text.replace(/&Ograve;/g,'�'); // 210 D2
+			text = text.replace(/&Oacute;/g,'�'); // 211 D3
+			text = text.replace(/&Ocirc;/g,'�'); // 212 D4
+			text = text.replace(/&Otilde;/g,'�'); // 213 D5
+			text = text.replace(/&Ouml;/g,'�'); // 214 D6
+			text = text.replace(/&times;/g,'�'); // 215 D7
+			text = text.replace(/&Oslash;/g,'�'); // 216 D8
+			text = text.replace(/&Ugrave;/g,'�'); // 217 D9
+			text = text.replace(/&Uacute;/g,'�'); // 218 DA
+			text = text.replace(/&Ucirc;/g,'�'); // 219 DB
+			text = text.replace(/&Uuml;/g,'�'); // 220 DC
+			text = text.replace(/&Yacute;/g,'�'); // 221 DD
+			text = text.replace(/&THORN;/g,'�'); // 222 DE
+			text = text.replace(/&szlig;/g,'�'); // 223 DF
+			text = text.replace(/&agrave;/g,'�'); // 224 E0
+			text = text.replace(/&aacute;/g,'�'); // 225 E1
+			text = text.replace(/&acirc;/g,'�'); // 226 E2
+			text = text.replace(/&atilde;/g,'�'); // 227 E3
+			text = text.replace(/&auml;/g,'�'); // 228 E4
+			text = text.replace(/&aring;/g,'�'); // 229 E5
+			text = text.replace(/&aelig;/g,'�'); // 230 E6
+			text = text.replace(/&ccedil;/g,'�'); // 231 E7
+			text = text.replace(/&egrave;/g,'�'); // 232 E8
+			text = text.replace(/&eacute;/g,'�'); // 233 E9
+			text = text.replace(/&ecirc;/g,'�'); // 234 EA
+			text = text.replace(/&euml;/g,'�'); // 235 EB
+			text = text.replace(/&igrave;/g,'�'); // 236 EC
+			text = text.replace(/&iacute;/g,'�'); // 237 ED
+			text = text.replace(/&icirc;/g,'�'); // 238 EE
+			text = text.replace(/&iuml;/g,'�'); // 239 EF
+			text = text.replace(/&eth;/g,'�'); // 240 F0
+			text = text.replace(/&ntilde;/g,'�'); // 241 F1
+			text = text.replace(/&ograve;/g,'�'); // 242 F2
+			text = text.replace(/&oacute;/g,'�'); // 243 F3
+			text = text.replace(/&ocirc;/g,'�'); // 244 F4
+			text = text.replace(/&otilde;/g,'�'); // 245 F5
+			text = text.replace(/&ouml;/g,'�'); // 246 F6
+			text = text.replace(/&divide;/g,'�'); // 247 F7
+			text = text.replace(/&oslash;/g,'�'); // 248 F8
+			text = text.replace(/&ugrave;/g,'�'); // 249 F9
+			text = text.replace(/&uacute;/g,'�'); // 250 FA
+			text = text.replace(/&ucirc;/g,'�'); // 251 FB
+			text = text.replace(/&uuml;/g,'�'); // 252 FC
+			text = text.replace(/&yacute;/g,'�'); // 253 FD
+			text = text.replace(/&thorn;/g,'�'); // 254 FE
+			text = text.replace(/&yuml;/g,'�'); // 255 FF
+			return text;
+		}
+  }
+};

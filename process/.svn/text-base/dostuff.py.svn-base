@@ -1,0 +1,128 @@
+import datetime
+
+from google.appengine.ext import db
+
+from appengine_utilities import sessions
+import models
+
+class DoStuff():
+    """Manages route(s) (CRUD)
+    """
+    parameters = {'action' : None, 'sub_action' : None,
+                  'code' : None, 'name' : None, 'n' : None,
+                  'update' : None, 'output' : None
+                  }
+
+    output = {
+     "status" : 0,
+     "message" : "",
+     "result" : 0
+    }
+    def __init__(self,parameters):
+        self.parameters = parameters
+
+    def execute(self):
+        """Actual execution
+
+            Returns:
+              None
+
+            Args:
+                None
+
+            TODO = manage time zones
+        """
+
+        #try:
+        method = {
+                  'language' : lambda x : self.language,
+                  'doStuff': lambda x : self.doStuff
+                 }.get(self.parameters['action'], lambda x: '')(self.parameters['action'])
+        method()
+
+        #except Exception, exception:
+        #    self.output["message"] = str(exception)
+
+        return str(self.output)
+
+    def language(self):
+        def add(self):
+            from common import util
+            lang=models.Lang(
+                code=self.parameters['code'],
+                name=util.html.encode(self.parameters['name'])
+                )
+            lang.put()
+
+        def populateFromFile(self):
+            from common import util
+            f=open(self.parameters['name'],'r')
+            lang=models.Lang.all().filter(' code =',self.parameters['code']).get()
+            saved_values={}
+            for lv in models.LDictionary.all().filter(' lang = ',lang):
+                saved_values[lv.ld_key]=lv.ld_value
+            for line in f:
+                k=line.split('=')[0]
+                try:
+                    v=util.html.encode(line[len(k)+1:]).replace('\n','')
+                    if self.parameters['update']=='true':
+                        models.LDictionary.save(
+                            ld_key=k,
+                            ld_value=v,
+                            code=lang.code
+                            )
+                    elif k not in saved_values:
+                        di=models.LDictionary(
+                            ld_key=k,
+                            ld_value=v,
+                            lang=lang
+                            )
+                        di.put()
+                except Exception, ex:
+                    print ''
+                    print 'error for: '+k+'. Message: '+str(ex)
+
+        def format(self):
+            q=models.LDictionary.all()
+            for lv in q:
+                try:
+                    val=lv.ld_value.replace(lv.ld_value[-1],'')
+                    if val is None: val=' '
+                    lv.ld_value=val
+                    lv.put()
+                except Exception, ex:
+                    print lv.ld_key+':'+lv.ld_value
+
+        def deleteAll(self):
+            q=models.LDictionary.all()
+            for lv in q:
+                lv.delete()
+
+        method = {
+          'add': lambda x : add,
+          'populateFromFile': lambda x : populateFromFile,
+          'format': lambda x : format,
+          'deleteAll': lambda x : deleteAll
+         }.get(self.parameters['sub_action'], lambda x: '')(self.parameters['sub_action'])
+        method(self)
+
+        self.output['status'] = 1
+        self.output['message'] = 'success'
+        self.output['result'] = 1
+
+
+    def doStuff(self):
+        model_list=["""models.AccessControlList,
+                    models.File,models.Page,
+                    models.FileStoreData,
+                    models.FileStore,
+                    models.UserProfile,
+                    models.UserGroup,
+                    models.Sidebar,models.ContactRequest"""
+                    ]
+        for e in model_list:
+            for m in e.all():m.delete()
+            
+        self.output['status'] = 1
+        self.output['message'] = 'success'
+        self.output['result'] = 1

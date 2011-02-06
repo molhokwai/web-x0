@@ -1,0 +1,154 @@
+#!/usr/bin/python2.5
+#
+# Copyright 2008 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+"""Middleware classes for Django."""
+
+import logging
+
+from django import http
+from google.appengine.api import users
+from appengine_utilities import sessions
+
+import models
+
+
+class AddUserToRequestMiddleware(object):
+  # pylint: disable-msg=R0903
+  """Adds a user data to each request.
+
+  Add a user object, a profile object, and a user_is_admin flag to each
+  request.  If the user is an administrator of the application but does
+  not have a profile, one is created.
+
+  """
+
+  def process_request(self, request):
+    # pylint: disable-msg=R0201
+    """Method defined by Django to handle processing requests.
+
+    Args:
+      request: the http request to process
+
+    Returns:
+      None
+    """
+    sess=sessions.Session()
+    if not 'lang' in sess: sess['lang'] = 'en'
+    
+    if 'lang' in request.GET:
+      sess['lang'] = request.GET['lang']
+
+    lang = sess['lang']
+    lang_path = sess['lang']
+    page_lang,page_language_dictionary = None,None
+    if 'page_lang' in request.GET:
+      lang_path = request.GET['page_lang']
+      page_lang = request.GET['page_lang']
+
+    langs = []
+    lang_codes = []
+    for l in models.Lang.all():
+      langs.append(l)
+      lang_codes.append(str(l.code))
+
+    if not lang_path is None and lang_path != 'en':
+      if not request.path[len(request.path)-1:]=='/':
+        request.path += '/'
+      for lc in lang_codes:
+        if '/'+lc+'/'==request.path[len(request.path)-4:]:
+          request.path=request.path[0:len(request.path)-3]
+      request.path += lang
+
+    """<METHOD_SET_LANGUAGE>"""
+    if (not 'language_dictionary' in sess
+        or 'lang' in request.GET
+        or not page_lang is None):
+        from common import util
+
+        code='en'
+        if not page_lang is None:
+          code=page_lang
+        elif not lang is None:
+          code=lang
+
+        if ((not 'languages_list' in sess)
+          or 'lang' in request.GET):
+          languages_list=[]
+          lang_model=None
+          for l in langs:
+              ld={
+                  'key':str(l.key()),
+                  'code':str(l.code),
+                  'name':unicode(util.html.decode(l.name)).upper(),
+                  'selectedString':''
+                  }
+              if (str(l.code)==str(code)):
+                lang_model=l
+              if (str(l.code)==str(lang)):
+                ld['selectedString']='selected'
+              languages_list.append(ld)
+          sess['languages_list']=languages_list
+        else:
+          for l in langs:
+              if (str(l.code)==str(lang)):
+                lang_model=l
+          
+        q=models.LDictionary.all()
+        q.filter(' lang = ',lang_model)
+        arr=[]
+        for l in q:
+          arr.append(l)
+          
+        sess['lang']=lang_model.code
+        
+        if not page_lang is None:
+          page_language_dictionary=util.language.makeLanguageArrayOutput(arr,'js')
+        if not 'language_dictionary' in sess or 'lang' in request.GET:
+          sess['language_dictionary']=util.language.makeLanguageArrayOutput(arr,'js')
+    """</METHOD_SET_LANGUAGE>"""
+        
+    request.sess = sess
+    request.language_dictionary=sess['language_dictionary']
+    if not page_language_dictionary is None:
+      request.language_dictionary=page_language_dictionary
+    request.languages_list=sess['languages_list']
+    
+    user = users.GetCurrentUser()
+    request.user = user
+    request.profile = None
+
+    if user:
+      request.user_id = user.user_id()
+      request.user_is_admin = users.is_current_user_admin()
+      profile = models.UserProfile.load(user.email())
+      if not profile:
+        if request.user_is_admin:
+          profile = models.UserProfile(email=user.email(), is_superuser=True)
+          profile.put()
+          logging.info('Created profile for admin %s' % profile.email)
+      
+      request.profile = profile
+
+    request.custom_template=None
+    if (len(request.path)>0):
+      import settings
+      path_sections=request.path[1:].split('/')
+      p=path_sections[0].lower().replace(' ','')
+      if (len(p)>0 and p in settings.CUSTOM_TEMPLATES):
+        request.custom_template=p
+
+    return None

@@ -1,0 +1,98 @@
+<html>
+    <head>
+        <title>molhokwai: web 3.0 paradigm developments</title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="keywords" content="developmentn dynamic, ajax, app, testing, web, network, connectedness, paradigm, 3.0, implementation, connect, connection, test" />
+        <meta name="description" content="molhokwai devevelopments: web 3.0, network, connectedness paradigm implementation development dynamic ajax app testing." />
+        <meta name="google-site-verification" content="r0Pfq2q9SK7Pk9gkh1NnbsV28-mQoD8LoIGOeUhfer8" />
+        
+		    <!-- scripts_and_styles -->
+        <style type="text/css">
+            @import "/static/css/base.css";
+            @import "/static/css/themes/0/style.css";
+        </style>
+		    <script id="jquery" 		          type="text/javascript"  src="/static/js/components/jquery/jquery.js"></script>
+		    <script id="molhokwai_common" 	  type="text/javascript"  src="/static/js/net.molhokwai/molhokwai.common.js"></script>
+		    <script id="command_generation" 	type="text/javascript"  src="/static/js/net.molhokwai/molhokwai.ajax.app.js"></script>
+		    <script id="page_script"          type="text/javascript"  src="/static/js/net.molhokwai/molhokwai.ajax.app/text_command_hmi.html.js"></script>
+		    <noscript>YOU DO NOT HAVE JAVASCRIPT ENABLED. THIS APPLICATION MIGHT NOT WORK PROPERLY.</noscript>
+    </head>
+    <body class="body">
+        <div id="wrapper" class="width40pc margt5pc marg-auto padtb1pc padlr2pc border-std gradient">
+            <div id="top-bar"  class="text-alignr"><a href="/admin" class="underline">admin</a></div>
+
+            <div id="content">
+                <h2>Test</h2>
+                
+                <p>The place for testing data crud queries. The test sequence is to set each test query with the corresponding radio button, and to execute it. Following the order displayed.
+                And eventually accessing the <a id="data_admin_link" href="http://appengine.google.com" target='_blank' class="underline">datastore administration dashboard</a> at each step to check data state.</p>
+                
+                <form id="app_form" action="" method="post" onsubmit="on_submit(); return false;">
+                    <fieldset>
+                        <p class="display-none"><label for="url">test url</label> <input type="text" name="url" size="20" id="url" value="http://localhost:81/process?module=dynamic_ajax_app&output=json"/></p>
+                        <p>
+                          <label for="command_json">Text command:</label>
+                          <textarea id="command_json" name="command_json" rows="8" class="font-size08em" style="width:65em;"></textarea>
+                        </p>
+                        <p id="rbl" class="margr8pc">
+                          <span>delete</span><input name="crud" type="radio" value="delete" onclick="set_crud('DELETE')"/> <span>update</span><input name="crud" type="radio" value="update" onclick="set_crud('UPDATE')"/>
+                          <span>read</span><input name="crud" type="radio" value="read" onclick="set_crud('READ')"/> <span>create</span><input name="crud" type="radio" value="create" onclick="set_crud('CREATE')"/>
+                        </p>
+                        <div class="clear"></div>
+                        <p><label for="submit">&nbsp;</label><input type="submit" class="right" value="Test"/></p>
+                    </fieldset>
+                </form>
+                
+				        <div id='frame' class="width80pc border-std margt10pc pad2pc">&nbsp;</div>
+            </div>
+
+            <div class="clear"></div>
+
+            <div id="footer" class="left margl3pc font-size07em italic width90pc">
+                <h3 class="margb-03pc"></h3>
+                <span class="display-block"></span>
+                <span class="display-block"></span>
+            </div>
+     
+        </div>
+
+        <input id="JSON_TEST_DATA_CREATE" type="hidden" 
+            value='create Test
+				           test="test value",test_one="test1 value",test_two="test2 value"'
+	      />
+	
+        <input id="JSON_TEST_DATA_READ" type="hidden" 
+            value='read Test
+                   test eq "test value" and test_one == "test1 value"'
+	      />
+	
+        <input id="JSON_TEST_DATA_UPDATE" type="hidden" 
+            value='update Test
+                  test=test value update,test_one=test1 value update,test_two=test2 value update
+                  test eq "test value" and test_one == "test1 value"'
+       />
+	
+        <input id="JSON_TEST_DATA_DELETE" type="hidden" 
+            value='delete Test
+                  test="test value update"
+                  test=="test value update" and test_one eq "test1 value update"'
+        />
+
+        <script type="text/javascript" id="tracking_src">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+        </script>
+        <script type="text/javascript" id="tracking_process">
+            try {
+              var pageTracker = _gat._getTracker("UA-5101967-1");
+              pageTracker._initData();
+              pageTracker._trackPageview();
+            }
+            catch(e){
+            }
+        </script>
+        <!-- end #tracking -->
+    </body>
+</html>
+

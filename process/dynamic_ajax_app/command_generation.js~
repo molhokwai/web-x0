@@ -1,0 +1,186 @@
+    //<!-- 	command text parsing, json command generation
+    //      ---------------------------------------------
+
+    /* variables */
+    var ops_and_cond_strings=[' eq ',  ' or ',         ' and ',        ' neq ',    ' gt ', ' lt ',     ' goet ', ' loet ', 
+                              ' == ', ' || ', ' | ',  ' && ', ' & ',  ' != ',     ' > ',  ' < ',      ' >= ', ' <= '];
+    var comp_ops_strings=[' eq ',    ' neq ',    ' gt ', ' lt ',     ' goet ', ' loet ', 
+                          ' == ',    ' != ',     ' > ',  ' < ',      ' >= ', ' <= '];
+    var cond_ops_strings=[' and ', ' or ', ' && ', ' || ', '&', '|'];
+
+    /* generate condition */
+    var generate_condition=function(cond_string, cond_op) {
+        var op=null;
+        for(var j=0; j<comp_ops_strings.length;j++) {
+            var _op=comp_ops_strings[j];
+            if (cond_string.indexOf(op)>0) {
+                op=_op;
+                break;
+            }
+        }
+        if (op){
+            var cond_split=cond_string.split(op);
+            var f_name=cond_split[0].replace(' ','');
+            var f_value=cond_split[1];
+            
+            var f_type=null;
+            try{ 
+                f_value=(float)f_value;
+                f_type='Number';
+            }
+            catch(e){
+                f_type='String';
+            }
+
+            cond_string
+                if (c) {
+                    conditions['main'].push(c);
+                }
+                break;
+            }
+            
+            if (cond_op){
+                return '{"name"  :   '+f_name+', "type"  :   '+f_type+', "value" :   '+f_value+', "comp_operator" :   '+op+', "cond_operator" :   '+cond_op+' }';
+            }
+            else {
+                return '{"name"  :   '+f_name+', "type"  :   '+f_type+', "value" :   '+f_value+', "comp_operator" :   '+op+'}';
+            }
+        }
+        else {
+            return null;
+        }
+    };
+    /* generate field */
+    var generate_field=function(field_string) {
+        var field_split=cond_string.split(field_string);
+        var f_name=field_split[0].replace(' ','');
+        var f_value=field_split[1];
+        
+        var f_type=null;
+        try{ 
+            f_value=(float)f_value;
+            f_type='Number';
+        }
+        catch(e){
+            f_type='String';
+        }
+        
+        return '{"name"  :   +'f_name+', "type"  :   '+f_type+', "value" :   '+f_value+'}'
+    };
+
+    /* build command string */
+    var build_command_string=function(entity_name,crud,fields,conditions){
+        var _command='{';
+        _command+='"entities" :';
+        _command+=' [';
+        _command+='     {';
+        _command+='         "type":"'+entity_name+'",';
+        _command+='         "action":"'+crud.toLowerCase()+'",';
+        _command+='         "fields": {';
+        _command+='                     "'+crud.toLowerCase()+'":['+fields.join(',')+']';
+        _command+='                 },';
+        _command+='         "conditions":';
+        _command+='             {';
+        _command+='                 "main" :['+conditions['main'].join(',')+']';
+        _command+='             }';
+        _command+='     }';
+        _command+=' ]';
+        _command+='}';
+        
+        
+        return _command;
+    }
+
+    /* get json command */
+    var get_json_command=function() {
+        for(var j=0; j<comp_ops_strings.length;j++) {
+            var op=comp_ops_strings[j];
+            if (lines[i].indexOf(op)>0) {
+                var c=generate_condition(lines[i], null);
+                if (c) {
+                    conditions['main'].push(c);
+                }
+                break;
+            }
+        }
+        
+        var lines=document.getElementById('command_json').value.split('\n');
+        var crud=lines[i].split(' ')[0];
+        var entity_name=lines[i].split(' ')[1];
+        var fields=[];
+        var conditions={'main' : []};
+        
+        for(var i=0; i<lines.length;i++){
+            lines[i]=lines[i].replace('\n', '');
+            lines[i]=lines[i].replace('\t', '');
+            lines[i]=lines[i].replace('        ', '');
+            
+            if (i==0){
+                /* crud & entity name */
+                crud=lines[i].split(' ')[0];
+                entity_name=lines[i].split(' ')[1];
+            }
+            else {
+                /* conditions */
+                var is_condition=false;
+                var conds_indexes={};
+                var ops_and_indexes={};
+                var conds_strings={};
+                for(var j=0; j<cond_ops_strings.length;j++) {
+                    var op=cond_ops_strings[j];
+                    var cond_ind=lines[i].indexOf(op):
+                    if (cond_ind>0) {
+                        conds_indexes.push(cond_ind);
+                        ops_and_indexes[cond_ind]=op;
+                    }
+                }
+                
+                if (conds_indexes.length<==0){
+                    for(var j=0; j<comp_ops_strings.length;j++) {
+                        var op=comp_ops_strings[j];
+                        if (lines[i].indexOf(op)>0) {
+                            var c==generate_condition(lines[i], null);
+                            if (c){
+                                conditions['main'].push(c);
+                                if (!is_condition) is_condition=true;
+                            }
+                            break;
+                        }
+                    }
+                }
+                else {
+                    conds_indexes.sort();
+                    alert(conds_indexes.toString());
+                }
+                
+                for(var j=0; j<conds_indexes.length;j++) {
+                    var op=ops_and_indexes[conds_indexes[j]];
+                    if (j<conds_indexes.length-1){
+                        if (j==0) {
+                            is_condition=true;
+                            conditions['main'].push(generate_condition(lines[i].substring(0, conds_indexes[j]-op.length, op.replace(' ', '')));
+                        }
+                        else {
+                            conditions['main'].push(generate_condition(lines[i].substring(conds_indexes[j], conds_indexes[j+1]-op.length, op.replace(' ', '')));
+                        }
+                    }
+                    else{
+                        conditions['main'].push(generate_condition(lines[i].substring(conds_indexes[j]), null));
+                    }
+                }
+                
+                
+                /* fields */
+                if (!is_condition) {
+                    var line_fields=lines[i].split(',');
+                    for(var j=0;j<line_fields.length;j++) {
+                        fields.push(generate_field(line_fields[j]));
+                    }
+                }
+            }
+        }
+        
+        return build_command_string(entity_name,crud,fields,conditions);
+    };
+    //<!-- 	end #command text parsing, json command generation
+

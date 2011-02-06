@@ -1,0 +1,411 @@
+from types import *
+
+import datetime
+import logging
+import urllib
+
+import google.appengine.api.urlfetch as urlfetch
+from django.utils import simplejson as json
+from google.appengine.ext import db
+
+from common import util
+import models
+import process
+
+class Manage():
+    """To be able to build application without (server-side) coding:
+        - create entities (models) and manage them dynamically
+    """
+    parameters = {'action' : None, 'sub_action' : None,
+                  'command_json' : None, 'output' : None
+                }
+    output = {
+     "status" : 0,
+     "message" : "",
+     "result" : 0
+    }
+
+    """
+    from common import util
+    def handle_special_chars(self):
+      params=self.parameters
+      for key in params:
+          if (type(params[key])==StringType
+              or type(params[key])==UnicodeType):
+            params[key]=util.stringToAscii(params[key])
+    """
+
+    def __init__(self,parameters):
+        self.parameters = parameters
+
+    def execute(self):
+        """Actual execution
+
+            Returns:
+              None
+
+            Args:
+                None
+        """
+        if True:
+            method = {
+                      'dynamic_ajax_app' : lambda x : self.process
+                     }.get(self.parameters['action'], lambda x: self.process)(self.parameters['action'])
+            method()
+        try:
+            pass
+        except Exception, exception:
+            logging.error(str(exception))
+            self.output["message"] = str(exception)
+
+        if self.parameters["output"].lower() == "json":
+            return str(self.output)
+        else:
+            raise Exception("output to " + self.parameters["output"] + "not implemented in process/route/manage")
+
+    def process(self):
+        """Gets the JSON value and parses it to execute it's (command) structure.
+
+            RULES : The create parameters of en entity should always be passed, in all cases.
+                    Needed for dynamic entity declaration.
+
+            Sample JSON structure:
+                {
+                    entities :[
+                        {
+                            'type':'<Type>',
+                            'action':'<create | read | update | delete>',
+                            'fields':(
+                                    '*'
+                                    |
+                                    {
+                                        'identifier':[
+                                            None | {'name':<name>,'type':<type>,'value':<value>,...}
+                                        ],
+                                        'create':[
+                                            {'name':<name>,'type':<type>,'value':<value>,...},
+                                            {'name':<name>,'type':<type>,'value':<value>,...},
+                                            ...,
+                                            {'name':<name>,'type':<type>,'value':<value>,...}
+                                        ],
+                                        'read':(
+                                            '*'
+                                            |
+                                            [<name>,<name>,...,<name>]
+                                        ),
+                                        'update':[
+                                            {'name':<name>,'type':<type>,'value':<value>},
+                                            {'name':<name>,'type':<type>,'value':<value>},
+                                            ...,
+                                            {'name':<name>,'type':<type>,'value':<value>}
+                                        ]
+                                    }
+                            ),
+                            conditions:
+                                {
+                                    'main' : [<condition>,...,<condition>],
+                                    'nested' : {
+                                        {
+                                            'main' : [<condition>,...,<condition>],
+                                            'nested' : {
+                                                ...
+                                            }
+                                        }
+                                    }
+                                },
+                                where 'main'.<condition> is
+                                (
+                                    [
+                                    {'name':<name>,'type':<type>,'value':<value>,'comp_operator':<comp_operator>,'cond_operator':<cond_operator>},
+                                    {'name':<name>,'type':<type>,'value':<value>,'comp_operator':<comp_operator>,'cond_operator':<cond_operator>},
+                                    ...,
+                                    {'name':<name>,'type':<type>,'value':<value>,'comp_operator':<comp_operator>,'cond_operator':<cond_operator>}
+                                    ]
+                                )
+                                and 'nested'.condition is (same as 'main'.condition without the last conditionnal operator)
+                                (
+                                    [
+                                    ...,
+                                    {'name':<name>,'type':<type>,'value':<value>,'comp_operator':<comp_operator>}
+                                    ]
+                                )
+                    ],
+                    queries :[
+                        {
+                            'action':'read',
+                            'fields':(  '*'
+                                        |
+                                        [<name>,<name>,...,<name>,]
+                                    ),
+                            'entity':'<Type>',
+                            'conditions':(as above)
+                        }
+                    ]
+                };
+
+            Args :
+                None
+
+            Returns :
+                JSON (String)
+        """
+        command_json={
+              'entities' :
+              [
+                {
+                    'type':'Test',
+                    'action':'update',
+                    'fields': {
+                                'update':[
+                                    {'name':'test','type':'String','value':'2nd test update'},
+                                    {'name':'test_one','type':'String','value':'test1 value update'},
+                                    {'name':'test_two','type':'String','value':'test2 value update'}
+                                ]
+                            },
+                    'conditions':
+                        {
+                            'main' :[{'name':'test','type':'String','value':'2nd test','comp_operator':'eq','cond_operator':'and'}],
+                            'nested' :
+                                {
+                                    'main' : [{'name':'test','type':'String','value':'2nd test: 2nd entity','comp_operator':'eq'}]
+                                }
+                        }
+                }
+            ]
+        }
+        """command_json=eval(self.parameters['command_json'])"""
+        entity_manager=EntityManager()
+        entities_output=[]
+        if command_json.has_key('entities'):
+            for i in range(len(command_json['entities'])):
+                entity=command_json['entities'][i]
+                _function={
+                    'create' : lambda x: entity_manager.create,
+                    'read' : lambda x: entity_manager.read,
+                    'update' : lambda x: entity_manager.update,
+                    'delete' : lambda x: entity_manager.delete,
+                    }.get(entity['action'],lambda x:'')(entity['action'])
+                res=_function(entity)
+                if entity['action']=='read':
+                    for i in range(len(res)):
+                        entities_output.append(res[i])
+
+        if command_json.has_key('queries'):
+            query_manager=QueryManager()
+            for i in range(len(command_json['queries'])):
+                query=command_json['queries'][i]
+                _function={
+                    """only read, in gql: see
+                        http://code.google.com/appengine/docs/python/datastore/gqlreference.html
+                    """
+                    'read' : lambda x: query_manager.read
+                    }.get(query['action'],lambda x:'')(query['action'])
+                res=_function(query)
+                if query['action']=='read':
+                    for i in range(len(res)):
+                        entities_output.append(res[i])
+
+        self.output["status"] = process.Status.SUCCESS
+        self.output["message"] = 'call(s) succeeded'
+        self.output["result"] = entities_output
+        return self.output
+
+
+class FieldStringOutput():
+    @staticmethod
+    def param_field_equals_value(field):
+        """
+            Output for dynamic entity parameter code execution
+            Types: see http://code.google.com/intl/fr-FR/appengine/docs/python/datastore/typesandpropertyclasses.html
+            Only one of those types is allowed"""
+        field=util.Obj(field)
+        sname=field.name
+        stype='db.'+field.type+'Property'
+
+        srequired=None
+        sdefault=None
+        scollection_name=None
+        schoices=None
+
+        if hasattr(field,"required"):
+            srequired='required=True'
+        if hasattr(field,"default"):
+            quot=util.code.generate.get_quoting_char_string(field.type)
+            sdefault='default='+quot+field.default+quot
+        if hasattr(field,"collection_name"):
+            scollection_name='collection_name="'+field.collection_name+'"'
+        if hasattr(field,"choices"):
+            schoices='choices=set(["'+('","'.join(schoices))+'"])'
+
+        soutput=sname+'='+stype+'('
+        trimr=False
+        attributes=[srequired,sdefault,scollection_name,schoices]
+        for i in range(len(attributes)):
+            if not attributes[i] is None:
+                soutput+=attributes[i]+','
+                trimr=True
+        if trimr:soutput=soutput[:len(soutput)-1]
+        soutput+=')'
+        return soutput
+
+    @staticmethod
+    def field_operator_value(field,operator='='):
+        field=util.Obj(field)
+        sname=field.name
+        svalue=None
+
+        quot=''
+        if field.type in ['String','DateTime','Date','Time','User','Text',
+                          'Category','Email','PhoneNumber','PostalAddress']:
+            quot='"'
+        svalue=quot+field.value+quot
+        soutput=sname+operator+svalue
+        return soutput
+
+class EntityManager(db.Model):
+    """See sample JSON entities structure in execute method"""
+    entities=db.StringListProperty()
+
+    def instance_declaration_string(self,entity,action):
+        fso=''
+        for i in range(len(entity['fields'][action])):
+            field=entity['fields'][action][i]
+            fso+=FieldStringOutput.param_field_equals_value(field)+'\n\t'
+        return 'class '+entity['type']+'(db.Expando):\n\t'+fso+'\n'
+
+    def create(self,entity):
+        exec self.instance_declaration_string(entity,'create')
+
+        fso=''
+        i=0
+        for i in range(len(entity['fields']['create'])):
+            field=entity['fields']['create'][i]
+            if i>0: fso+='\n\t,'
+            fso+=FieldStringOutput.field_operator_value(field)
+            i+=1
+        exec entity['type']+'(\n\t'+fso+').put()\n'
+
+        if not entity['type'] in self.entities:
+            self.entities.append(entity['type'])
+            self.put()
+
+    def get_conditions_entities(self,entity):
+        query={
+            'action':'read',
+            'fields':' * ',
+            'entity':entity['type'],
+            'conditions': entity['conditions']
+        }
+        return QueryManager().read(query)
+
+
+    def update(self,entity):
+        exec self.instance_declaration_string(entity,'update')
+
+        entities=self.get_conditions_entities(entity)
+        for i in range(len(entities)):
+            entity_obj=entities[i]
+            feeso=''
+            i=0
+            for i in range(len(entity['fields']['update'])):
+                field=entity['fields']['update'][i]
+                if i>0: feeso+='\n'
+                feeso+='entity_obj.'+FieldStringOutput.field_operator_value(field)
+                i+=1
+            exec feeso+'\n'+'entity_obj.put()\n'
+
+    def delete(self,entity):
+        exec self.instance_declaration_string(entity,'delete')
+
+        entities=self.get_conditions_entities(entity)
+        for i in range(len(entities)):
+            entities[i].delete()
+
+class QueryManager(db.Model):
+    """See sample JSON queries structure in execute method
+        queries :[
+            {
+                'action':'<create | read | update | delete>',
+                'fields':(  '*'
+                            |
+                            [<name>,<name>,...,<name>,]
+                        ),
+                'entity':'<Type>',
+                conditions:
+                    {
+                        'main' : [<condition>,...,<condition>],
+                        'nested' : {
+                            {
+                                'main' : [<condition>,...,<condition>],
+                                'nested' : {
+                                    ...
+                                }
+                            }
+                        }
+                    },
+                    where 'main'.<condition> is
+                    (
+                        [
+                        {'name':<name>,'type':<type>,'value':<value>,'comp_operator':<comp_operator>,'cond_operator':<cond_operator>},
+                        {'name':<name>,'type':<type>,'value':<value>,'comp_operator':<comp_operator>,'cond_operator':<cond_operator>},
+                        ...,
+                        {'name':<name>,'type':<type>,'value':<value>,'comp_operator':<comp_operator>,'cond_operator':<cond_operator>}
+                        ]
+                    )
+                    and 'nested'.condition is (same as 'main'.condition without the last conditionnal operator)
+                    (
+                        [
+                        ...,
+                        {'name':<name>,'type':<type>,'value':<value>,'comp_operator':<comp_operator>}
+                        ]
+                    )
+            }
+        ];
+    """
+    """
+            TO 'cache' queries & not have to process them when already existing
+                needs placeholders for variable values
+            if dispatcher.request.url in self.queries:
+            request_query=RequestQuery.all().filter(' url = ', dispatcher.request.url).get()
+
+            (,dispatcher=None parameter to be added...)
+    """
+    queries=db.StringListProperty()
+
+    def fields(self,query):
+        fields=' * '
+        if type(query['fields'])==ListType:
+            fields=','.join(query['fields'])
+        elif type(query['fields'])==StringType:
+            fields=query['fields']
+        return fields
+
+    def from_clause(self,query):
+        return ' FROM '+query['entity']+' '
+
+    def where_clause(self,query):
+        where_clause=' WHERE '
+        if (type(query['conditions'])==StringType
+            or type(query['conditions'])==UnicodeType):
+            where_clause+=query['conditions']
+        elif type(query['conditions'])==DictType:
+            where_clause+=util.code.generate.condition(query['conditions'])
+        return where_clause
+
+    def read(self,query):
+        entities=[]
+
+        select_clause='SELECT '+self.fields(query)
+        from_clause=self.from_clause(query)
+        where_clause=self.where_clause(query)
+
+        print ''
+        print select_clause+from_clause+where_clause
+        q=db.GqlQuery(select_clause+from_clause+where_clause)
+        for r in q:
+            entities.append(r)
+        return entities
+
+class RequestQuery(db.Model):
+    url=db.LinkProperty(required=True)
+    query=db.StringProperty(required=True)

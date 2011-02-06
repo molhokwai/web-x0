@@ -1,0 +1,433 @@
+/*
+    EXPLAIN:
+    ##################################################
+    CONVENTIONS: 
+        l, r, t, b: left, right, top, bottom
+        abbreviations: first 'syllabe' + second one if mute...
+        
+*/
+
+/* COMMON STRUCTURE */
+
+* {
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+}
+body {
+    background-color: black;
+    font-family: Helvetica, Verdana, Sans-Serif;
+    font-size: 13px;
+    color: #EEFEFF;
+}
+
+#wrapper, wrapper {
+	/* use .gradient in place in wrapper or #wrapper and remove these styles */
+    /* classical */
+    background-image: url("/pages/healing/images/mainBG.png");
+    background-repeat: repeat-x;
+    background-color: #451100;
+    /* gradient */
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #000001), color-stop(1, #451100));
+    background-image: -moz-linear-gradient(top,#000001, #451100);
+    filter:progid:DXImageTransform.Microsoft.Gradient(GradientType =3, startColorstr=#000001,endColorstr=#451100);
+    /* other */
+    min-width: 350px;
+}
+
+footer, #footer {
+}
+
+content, #content {
+}
+
+text_main, #text_main {
+}
+
+session_note, #session_note {
+}
+
+session_to_participate, #session_to_participate {
+}
+
+signature, #signature {
+	/*use .fontf-helvetica and remove style from this */
+    font-family: "Helvetica";
+}
+
+footer, #footer {
+}
+
+
+
+/* COLORS & COLOR EFFECTS */
+
+.gradient {
+    /* classical */
+    background-image: url("/pages/healing/images/mainBG.png");
+    background-repeat: repeat-x;
+    background-color: #451100;
+    /* gradient */
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #000001), color-stop(1, #451100));
+    background-image: -moz-linear-gradient(top,#000001, #451100);
+    filter:progid:DXImageTransform.Microsoft.Gradient(GradientType =3, startColorstr=#000001,endColorstr=#451100);
+    /* other */
+}
+
+
+.fontc_light-blue-green {
+    color: #EEFEFF;
+}
+.fontc_my_orange {
+    color: #CD6600;
+}
+
+/* BORDERS */
+/* standard */
+.border-std {
+    border: 1px solid #676767;
+}
+/* undo round */
+.round-borders {
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+}
+
+
+/* FLOATS */
+.left {
+    float:left;
+}
+.right {
+    float:right;
+}
+.clear {
+    clear:both;
+}
+
+
+/* WIDTHS */
+.width10pc {
+    width:10%;
+}
+.width15pc {
+    width:15%;
+}
+.width20pc {
+    width:20%;
+}
+.width25pc {
+    width:25%;
+}
+.width30pc {
+    width:30%;
+}
+.width40pc {
+    width:40%;
+}
+.width45pc {
+    width:45%;
+}
+.width60pc {
+    width:80%;
+}
+.width80pc {
+    width:80%;
+}
+.width90pc {
+    width:90%;
+}
+
+.minw350 {
+    min-width: 350px;
+}
+.minw0 {
+    min-width: 0 !important;
+}
+.minw8em {
+    min-width: 8em;
+}
+.minw4em {
+    min-width: 4em;
+}
+.minw5em {
+    min-width: 5em;
+}
+
+
+/* HEIGHTS */
+.lineh7pc {
+    line-height: 7%;
+}
+
+
+/* POSITION, DISPLAY*/
+.display-block {
+    display: block;
+}
+.display-none {
+    display: none;
+}
+
+
+
+/* TEXT POSITIONS */
+.text-alignc {
+    text-align:center;
+}
+.text-alignl {
+    text-align:left;
+}
+.text-alignr {
+    text-align:right;
+}
+
+
+/* TEXT DECORATIONS, EFFECTS */
+.underline {
+    text-decoration: underline;
+}
+.text-dec-none {
+    text-decoration: none;
+}
+
+
+/* MARGINS */
+/*left*/
+.margl3pc {
+    margin-left:3%;
+}
+.margl5pc {
+    margin-left:5%;
+}
+.margl10pc {
+    margin-left:10%;
+}
+
+/*left*/
+.margr3pc {
+    margin-right:3%;
+}
+.margr5pc {
+    margin-right:5%;
+}
+.margr8pc {
+    margin-right:8%;
+}
+.margr10pc {
+    margin-right:10%;
+}
+
+/*top*/
+.margt-2pc {
+    margin-top: -2% !important;
+}
+.margt-1pc {
+    margin-top: -1% !important;
+}
+.margt1pc {
+    margin-top: 1% !important;
+}
+.margt2pc {
+    margin-top: 2% !important;
+}
+.margt3pc {
+    margin-top: 3% !important;
+}
+.margt4pc {
+    margin-top: 4% !important;
+}
+.margt5pc {
+    margin-top: 5% !important;
+}
+.margt10pc {
+    margin-top: 10% !important;
+}
+
+/*bottom*/
+.margb1pc {
+    margin-bottom: 1% !important;
+}
+
+.margb-03pc {
+    margin-bottom: -0.5% !important;
+}
+.margb-05pc {
+    margin-bottom: -0.5% !important;
+}
+.margb-1pc {
+    margin-bottom: -1% !important;
+}
+.margb-2pc {
+    margin-bottom: -2% !important;
+}
+.margb-3pc {
+    margin-bottom: -3% !important;
+}
+
+.marg-auto {
+    margin: auto;
+}
+
+
+
+/* PADDINGS */
+/* all */
+.pad2pc {
+    padding:2%;
+}
+
+/*left right*/
+.padlr1pc {
+    padding-left:1%;
+    padding-right:1%;
+}
+.padlr2pc {
+    padding-left:2%;
+    padding-right:2%;
+}
+.padlr10pc {
+    padding-left:10%;
+    padding-right:10%;
+}
+
+/*top bottom*/
+.padtb1pc {
+    padding-top:1%;
+    padding-bottom:1%;
+}
+.padtb2pc {
+    padding-top:2%;
+    padding-bottom:2%;
+}
+
+
+/*left*/
+.padl2pc {
+    padding-left:2%;
+}
+.padl3pc {
+    padding-left:3%;
+}
+.padl4pc {
+    padding-left:4%;
+}
+.padl5pc {
+    padding-left:4%;
+}
+
+/*top*/
+.padt1pc {
+    padding-top:1%;
+}
+.padt2pc {
+    padding-top:2%;
+}
+
+/*bottom*/
+.padb1pc {
+    padding-bottom:1%;
+}
+.padb2pc {
+    padding-bottom:2%;
+}
+
+
+/* FONT STYLES & EFFECTS */
+.colorEFEFEF {
+    color: #EFEFEF;
+}
+
+/* FONT STYLES & EFFECTS */
+.italic {
+    font-style: italic;
+}
+.font-size07em {
+    font-size: 0.7em;
+}
+.font-size08em {
+    font-size: 0.7em;
+}
+.font-size09em {
+    font-size: 0.9em;
+}
+.font-size095em {
+    font-size: 0.95em;
+}
+.font-size12em {
+    font-size: 1.2em;
+}
+
+.fontf-helvetica {
+	font-family: "Helvetica";
+}
+p:first-letter, ul li:first-letter {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+
+/* TEXT STYLES & EFFECTS */
+.text-transu {
+    text-transform:uppercase;
+}
+
+
+/* LIST STYLES & EFFECTS */
+ul.no-bullets li {
+    list-style-type:none;
+}
+
+
+/* HEADINGS */
+h1, h2, h3, h4, h5, h6 {
+    /*class: .font-color_light-blue-green */
+    color: #EEFEFF;
+}
+#wrapper p, wrapper p {
+    letter-spacing: 0.08em;
+}
+
+
+/* ELEMENTS */
+a {
+    color:#FFDEDE;
+    text-decoration:none;
+}
+
+label {
+	float:left;
+	min-width: 10em;
+	padding-left: 1em;
+}
+label:first-letter {
+	font-weight:bold;
+	text-transform:capitalize;
+	font-size: 1.1em;
+}
+
+input, select, textarea {
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+	border-width: 2px;
+	min-width: 38em;
+	padding: 0.3em 0.6em;
+	font-size: 0.9em;
+}
+input[type="submit"], input.submit {
+    /* classical */
+    background-image: url("/pages/healing/images/mainBG.png");
+    background-repeat: repeat-x;
+    background-color: #451100;
+    /* gradient */
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #000001), color-stop(1, #451100));
+    background-image: -moz-linear-gradient(top,#000001, #451100);
+    filter:progid:DXImageTransform.Microsoft.Gradient(GradientType =3, startColorstr=#000001,endColorstr=#451100);
+    /* other */
+	font-size:1.05em;
+	margin-right:4.5em;
+	min-width:10em;
+    color: #EEFEFF;
+}
+pre {
+    color: #EEFEFF;
+}

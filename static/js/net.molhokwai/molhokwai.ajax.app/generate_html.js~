@@ -1,0 +1,47 @@
+madaa.options.html._=
+     '<h2>'+options.html.title+'</h2>'
+    +'<form id="app_form" action="" method="post" onsubmit="on_submit(); return false;">'
+    +'    <input type="hidden" name="url" size="20" id="url" value="'+options.api.url+'"/>'
+    +'    <p>'
+    +'        <label for="command_json">'+options.html.labels.text_command+':</label>'
+    +'        <textarea id="command_json" name="command_json" rows="30" class="font-size08em" style="width:65em;"></textarea>'
+    +'    </p>'
+    +'    <label for="rbl">'+options.html.labels.examples+'</label>'
+    +'    <p id="rbl" class="margr8pc">'
+    +'        <span>delete</span><input name="crud" type="radio" value="'+options.html.labels.read+'" onclick="set_crud(\''+options.html.labels.read.toUppercase()+'\')"/>'
+    +'        <span>update</span><input name="crud" type="radio" value="'+options.html.labels.update+'" onclick="set_crud(\''+options.html.labels.update.toUppercase()+'\')"/>'
+    +'        <span>read</span><input name="crud" type="radio" value="'+options.html.labels.read+'" onclick="set_crud(\''+options.html.labels.read.toUppercase()+'\')"/>'
+    +'        <span>create</span><input name="crud" type="radio" value="'+options.html.labels.create+'" onclick="set_crud(\''+options.html.labels.create.toUppercase()+'\')"/>'
+    +'    </p>'
+    +'    <div class="clear"></div>'
+    +'    <p><label for="submit">&nbsp;</label><input type="submit" class="right" value="Test"/></p>'
+    '  </fieldset>'
+    +'</form>'
+
+    +'<div id="frame" class="width80pc border-std margt10pc pad2pc">&nbsp;</div>'
+
+    +'<input id="JSON_TEST_DATA_CREATE" type="hidden" '
+    +'    value=\'create Contact
+    +'          name="myhail aytorr", email="myhail@aytorr.com",phone="+33 489 71 51"\''
+    +'/>'
+
+    +'<input id="JSON_TEST_DATA_READ" type="hidden" '
+    +'    value=\'read Contact'
+    +'           name eq "myhail aytorr" and email == "myhail@aytorr.com"\''
+    +'/>
+
+    +'<input id="JSON_TEST_DATA_UPDATE" type="hidden" '
+    +'    value=\'update Contact'
+    +'          phone="+32 489 33 71 51"'
+    +'          name eq "myhail aytorr" and email == "myhail aytorr"\''
+    +'/>'
+
+    +'<input id="JSON_TEST_DATA_DELETE" type="hidden" '
+    +'    value=\'delete Test'
+    +'          name="myhail aytorr"'
+    +'          name eq "myhail aytorr" and email == "myhail@aytorr.com"\''
+    +'/>';
+$.fn.madaa=function(options){
+  $(this).html(madaa.options.html._);
+}
+

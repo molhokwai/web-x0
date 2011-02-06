@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+
+Name       : Combination     
+Description: A two-column, fixed-width design with dark color scheme.
+Version    : 1.0
+Released   : 20101222
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Fast Online Prototyping</title>
+<link href="/static/html/fopt/style.css" rel="stylesheet" type="text/css" media="screen" />
+</head>
+<body>
+<div id="wrapper">
+	<div id="header-wrapper">
+		<div id="header">
+			<div id="logo">
+				<h1><a href="#">Prototyping </a></h1>
+				<p>fast online application prototyping tool</p>
+			</div>
+			<div id="menu">
+				<ul>
+					<li class="current_page_item"><a href="index.html">Home</a></li>
+					<li><a href="blog.html">Blog</a></li>
+					<li><a href="/site/demo" target="_blank">To Demo</a></li>
+					<li><a href="#">Download</a></li>
+					<li><a href="about.html">About</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- end #header -->
+	<div id="page">
+		<div id="page-bgtop">
+			<div id="page-bgbtm">
+				<div id="content">
+					
+					<div class="post">
+						<h2 class="title"><a href="#">Command line vs GUI</a></h2>
+						<div class="entry">
+							<p>First of all <strong>the <em>vs</em> does not mean there's a battle between the two</strong>, see a comparison <a href="http://www.computerhope.com/issues/ch000619.htm" target="_blank">here</a> for what is best is what situation.</p>
+
+							<p>This application/tool is command line (more like query, actually) based. Because <em>after the idea</em>, the structure of applications, tools, systems (and similar), or of modules of any of the earlier actually comes to the Mind in sequence, so working 
+							in a <em>sequence mode</em> environment is simply natural. The structure sequence flow translated into queries/commands... </p>
+							
+							<p>And when complete structure sequence flows can, <a href="#" onclick="document.getElementById('c_s_s_f_idea').innerHTML='<em>-idea: creating the most complex structure sequence flow possible for testing & extending.</em>'">however complex they may be</a>, 
+							be translated into <a href="#" onclick="document.getElementById('s_nl_detail').innerHTML='<em>-which, here, would mean, as close as possible to natural language...</em>'">simple</a> queries/commands that are automatically translated into a working 
+							application: programming takes a whole new direction.</p>
+							
+							<span id="c_s_s_f_idea" style='color:rgb(0,100,0);display:block;'></span>
+							<span id="s_nl_detail" style='color:rgb(0,100,0);display:block;'></span>
+
+						</div>
+						<div class="byline">
+							<p class="meta">January 09, 2011 Posted by <a href="#">...</a></p>
+							<p class="links"><a href="#">Read More</a>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" title="b0x w">Comments</a></p>
+						</div>
+					</div>
+          <!-- end .post -->
+					
+					<div class="post">
+						<h2 class="title"><a href="#">Process Decision Flow</a></h2>
+						<div class="entry">
+							<p>A process decision flow for a <em>human compiler</em>, to decide whether it is best, for the next phase of implementation of this project:</p>
+							<ul>
+							  <li>to keep the static files' fix currently implemented and build on it</li>
+							  <li>or to switch to a cms</li>
+							</ul>
+
+							<h3>Choice 1 Flow</h3>
+							<ul>
+							  <li>add <em>iframing</em> functionality: full app iframing, app crud pages discrete iframing, css styleheet setting</li>
+							  <li>add div list functionality</li>
+							  <li>add <em>create cms</em> functionality/demo</li>
+							  <li>add <em>create picasa media gallery*</em> functionality/demo*</li>
+							  <li>add pages (download, demo...): copy paste of static template page, html content creation, of and links menu adaptation</li>
+							  <li>add themes: current site's layout: implement layout and implement theming: copy paste the static html files for each theme, or js/jquery workaround...</li>
+              </ul>
+              
+							<h3>Choice 2 Flow</h3>
+							<p><em>(Idem except static pages & themes adding)</em></p>
+							<ul>
+							  <li>add pages (download, demo...): (cms) add page, (html) content creation</li>
+							  <li>add themes: current site's layout: implement layout and implement theming: copy paste the static html files for each theme, or js/jquery workaround...</li>
+							</ul>
+
+							<h3>Decision result:</h3>
+              <p>Obviously: continue with Choice1 until time to add new pages. Then siwtch to Choice 2, even faster, for themes adding.</p>
+
+
+							<small class="notes">*flow: create page picasa -&gt; command: &gt;<code>[page] add picasa</code>  -&gt; response: &gt;<em>api integration possibilities</em>(=> creation of std api interface, see http rest api def)  
+							-&gt; command: &gt;<code>[page] add picasa [item] crud</code> | <code>[page] add picasa [item] add</code> | <code>[page] add picasa [item] edit</code>...   </small>
+						</div>
+						<div class="byline">
+							<p class="meta">January 19, 2011 Posted by <a href="#">...</a></p>
+							<p class="links"><a href="#">Read More</a>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" title="b0x w">Comments</a></p>
+						</div>
+					</div>
+          <!-- end .post -->
+          
+          
+					<div style="clear: both;">&nbsp;</div>
+				</div>
+				
+				<!-- end #content -->
+				<div id="sidebar">
+					<ul>
+						<li>
+							<div id="search" >
+								<form method="get" action="#">
+									<div>
+										<input type="text" name="s" id="search-text" value="" />
+										<input type="submit" id="search-submit" value="GO" />
+									</div>
+								</form>
+							</div>
+							<div style="clear: both;">&nbsp;</div>
+						</li>
+						<li>
+							<h2>News & Updates</h2>
+							<p>First version yet to come, with full applications building features....</p>
+						</li>
+						<li>
+							<h2>Categories</h2>
+							<ul>
+								<li><a href="#">Development</a></li>
+								<li><a href="#">Content & Data Management</a></li>
+								<li><a href="#">Prototyping</a></li>
+								<li><a href="#">Large Scale Application</a></li>
+							</ul>
+						</li>
+						<li>
+							<h2>Blogroll</h2>
+							<ul>
+								<li><a href="#">...</a></li>
+							</ul>
+						</li>
+						<!-- li>
+							<h2>Archives</h2>
+							<ul>
+								<li><a href="#">Aliquam libero</a></li>
+								<li><a href="#">Consectetuer adipiscing elit</a></li>
+								<li><a href="#">Metus aliquam pellentesque</a></li>
+								<li><a href="#">Suspendisse iaculis mauris</a></li>
+								<li><a href="#">Urnanet non molestie semper</a></li>
+								<li><a href="#">Proin gravida orci porttitor</a></li>
+							</ul>
+						</li -->
+					</ul>
+				</div>
+				<!-- end #sidebar -->
+				
+				<div style="clear: both;">&nbsp;</div>
+			</div>
+		</div>
+	</div>
+	<!-- end #page -->
+	<div id="footer">
+		<p>Copyright (c) 2008 Sitename.com. All rights reserved. Design by <a href="http://www.freecsstemplates.org/"> CSS Templates</a>.</p>
+	</div>
+</div>
+<!-- end #footer -->
+</body>
+</html>

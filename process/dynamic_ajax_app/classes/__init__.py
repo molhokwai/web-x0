@@ -1,0 +1,3 @@
+"""
+    INIT (NAMESPACE DECLARATION)
+"""

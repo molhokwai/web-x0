@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/molhokwai_net/!svn/ver/124/app/process/dynamic_ajax_app
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/molhokwai_net/!svn/ver/124/app/process/dynamic_ajax_app/__init__.py
+END
+namespace.unittest.py
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/molhokwai_net/!svn/ver/126/app/process/dynamic_ajax_app/namespace.unittest.py
+END
+manage.py
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/molhokwai_net/!svn/ver/126/app/process/dynamic_ajax_app/manage.py
+END
+readme.dev
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/molhokwai_net/!svn/ver/126/app/process/dynamic_ajax_app/readme.dev
+END

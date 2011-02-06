@@ -1,0 +1,107 @@
+K 25
+svn:wc:ra_dav:version-url
+V 35
+/svn/molhokwai_net/!svn/ver/124/app
+END
+urls.py
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/molhokwai_net/!svn/ver/1/app/urls.py
+END
+main.py
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/molhokwai_net/!svn/ver/1/app/main.py
+END
+debug_wrapper.py
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/molhokwai_net/!svn/ver/1/app/debug_wrapper.py
+END
+.pydevproject
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/molhokwai_net/!svn/ver/79/app/.pydevproject
+END
+settings.py
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/molhokwai_net/!svn/ver/51/app/settings.py
+END
+models.py
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/molhokwai_net/!svn/ver/102/app/models.py
+END
+forms.py
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/molhokwai_net/!svn/ver/1/app/forms.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/molhokwai_net/!svn/ver/1/app/__init__.py
+END
+configuration.py
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/molhokwai_net/!svn/ver/120/app/configuration.py
+END
+middleware.py
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/molhokwai_net/!svn/ver/74/app/middleware.py
+END
+index.yaml
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/molhokwai_net/!svn/ver/1/app/index.yaml
+END
+app.yaml
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/molhokwai_net/!svn/ver/122/app/app.yaml
+END
+validators.py
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/molhokwai_net/!svn/ver/1/app/validators.py
+END
+utility.py
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/molhokwai_net/!svn/ver/73/app/utility.py
+END
+RELEASE_NOTES
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/molhokwai_net/!svn/ver/1/app/RELEASE_NOTES
+END
+.project
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/molhokwai_net/!svn/ver/79/app/.project
+END
+zip_handler.py
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/molhokwai_net/!svn/ver/1/app/zip_handler.py
+END

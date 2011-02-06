@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <title>molhokwai: web 3.0 paradigm developments</title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="keywords" content="developmentn dynamic, ajax, app, testing, web, network, connectedness, paradigm, 3.0, implementation, connect, connection, test" />
+        <meta name="description" content="molhokwai devevelopments: web 3.0, network, connectedness paradigm implementation development dynamic ajax app testing." />
+        <meta name="google-site-verification" content="r0Pfq2q9SK7Pk9gkh1NnbsV28-mQoD8LoIGOeUhfer8" />
+        
+		    <!-- scripts_and_styles -->
+        <style type="text/css">
+            @import "/static/css/base.css";
+            @import "/static/css/themes/0/style.css";
+        </style>
+		    <script id="jquery" 		          type="text/javascript" src="/static/js/components/jquery/jquery.js"></script>
+		    <script id="molhokwai_common" 	  type="text/javascript"  src="/static/js/net.molhokwai/molhokwai.common.js"></script>
+		    <script id="command_generation" 	type="text/javascript"  src="/static/js/net.molhokwai/molhokwai.ajax.app.js"></script>
+		    <script id="command_generation" 	type="text/javascript"  src="/static/js/net.molhokwai/molhokwai.ajax.app.dynamic.ui.js"></script>
+		    <script id="page_script"          type="text/javascript"  src="/static/js/net.molhokwai/molhokwai.ajax.app/app_command_htmi.html.js"></script>
+		    <noscript>YOU DO NOT HAVE JAVASCRIPT ENABLED. THIS APPLICATION MIGHT NOT WORK PROPERLY.</noscript>
+    </head>
+    <body class="body">
+        <div id="wrapper" class="width40pc margt5pc marg-auto padtb1pc padlr2pc border-std gradient">
+            <div id="top-bar"  class="text-alignr"><a href="/admin" class="underline" target="_blank">admin</a></div>
+
+            <div id="content">
+                <h2>App</h2>
+				        <form id="app_form" action="" method="post" onsubmit="on_submit({'form' : create_pages}); return false;">
+						        <p class="display-none"><label for="url">test url</label> <input type="text" name="url" size="20" id="url" value="/process?module=dynamic_ajax_app&output=json"/></p>
+						        <hr/>
+				            <div>
+				              <label for="command_fieldset">Pages:</label>
+				              <fieldset id="command_fieldset">
+				              
+				              </fieldset>
+				            </div>
+						        <hr/>
+						        <p>
+						            <h3>Text command:</h3>
+						            <span class="display-block margt-1pc margb1pc">
+						              Example:
+						              <code class="display-block padlr1pc margt-2pc">
+						              <br/>create Contact
+                          <br/>name="Mihayl Aythan",email="myhayl@aythan.net",voip="mihayl.aythan"
+                          <br/>location="Milky Way - Earth"
+                          </code>
+                          <em>(characters not allowed in fields: " ,(comma) " , ' "(quote) ')</em>
+						            </span>
+						            <textarea id="command_json" name="command_json" rows="3" class="font-size08em" style="width:65em;"></textarea>
+						        </p>
+						        <div class="clear"></div>
+						        <p><label for="submit">&nbsp;</label><input type="submit" class="right" value="create"/></p>
+					        </fieldset>
+				        </form>
+				
+				        <div class="clear"></div>
+				
+				        show/hide command & output<input type="checkbox" onclick="$('#command_output').toggle('visibility');" class="left margb1pc"/>
+				        
+                <div id="command_output" class="display-none">
+				            <div id='frame' class="width80pc border-std margt10pc pad2pc">&nbsp;</div>
+
+                    <br/>
+                    <br/>
+                    <h3>output...</h3>
+	                  <div id="command_form" class="padlr2pc padtb2pc">&nbsp;</div>
+                </div>
+	              
+            </div>
+
+            <div id="footer" class="left margl3pc font-size07em italic width90pc">
+                <h3 class="margb-03pc"></h3>
+                <span class="display-block"></span>
+                <span class="display-block"></span>
+            </div>
+     
+            <div class="clear"></div>
+        </div>
+
+        <script type="text/javascript" id="tracking_src">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+        </script>
+        <script type="text/javascript" id="tracking_process">
+            try {
+              var pageTracker = _gat._getTracker("UA-5101967-1");
+              pageTracker._initData();
+              pageTracker._trackPageview();
+            }
+            catch(e){
+            }
+        </script>
+        <!-- end #tracking -->
+    </body>
+</html>
+

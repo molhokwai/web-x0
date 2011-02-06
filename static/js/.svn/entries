@@ -1,0 +1,46 @@
+8
+
+dir
+127
+http://subversion.assembla.com/svn/molhokwai_net/app/static/js
+http://subversion.assembla.com/svn/molhokwai_net
+
+
+
+2010-04-29T11:57:56.811300Z
+127
+herve.mayou
+has-props
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+6ef0b02c-9ec0-4219-951d-d0e470784b5a
+
+components
+dir
+
+fck_config.js
+file
+124
+
+
+
+2009-10-23T20:04:33.000000Z
+55b6aedf731f3084877cc5a9c81217a7
+2009-10-23T20:04:33.669351Z
+1
+herve.mayou
+
+plugins
+dir
+

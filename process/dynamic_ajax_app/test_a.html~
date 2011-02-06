@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <title>molhokwai: web 3.0 paradigm developments</title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="keywords" content="developmentn dynamic, ajax, app, testing, web, network, connectedness, paradigm, 3.0, implementation, connect, connection, test" />
+        <meta name="description" content="molhokwai devevelopments: web 3.0, network, connectedness paradigm implementation development dynamic ajax app testing." />
+        <meta name="google-site-verification" content="r0Pfq2q9SK7Pk9gkh1NnbsV28-mQoD8LoIGOeUhfer8" />
+        
+		<!-- scripts_and_styles -->
+        <style type="text/css">
+            @import "/static/css/dynamic_ajax_app/base.css";
+            
+            label {
+            	float:left;
+            	min-width: 10em;
+            }
+            #rbl span, #rbl input {
+            	float:right;
+            }
+            label:first-letter, #rbl span:first-letter {
+            	font-weight:bold;
+            	text-transform:capitalize;
+            	font-size: 1.1em;
+            }
+            input, select, textarea {
+            	border-width: 2px;
+            }
+        </style>
+		<script id="command_generation" 	type="text/javascript">
+		  var a='g';
+		  alert(a));
+		</script>
+		<noscript>YOU DO NOT HAVE JAVASCRIPT ENABLED. THIS APPLICATION MIGHT NOT WORK PROPERLY.</noscript>
+    </head>
+    <body class="body">
+        <div id="wrapper" class="width40pc margt5pc marg-auto padtb1pc padlr2pc border-std gradient">
+        </div>
+
+
+        <script type="text/javascript" id="tracking_src">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+        </script>
+        <script type="text/javascript" id="tracking_process">
+            try {
+              var pageTracker = _gat._getTracker("UA-5101967-1");
+              pageTracker._initData();
+              pageTracker._trackPageview();
+            }
+            catch(e){
+            }
+        </script>
+        <!-- end #tracking -->
+    </body>
+</html>
+

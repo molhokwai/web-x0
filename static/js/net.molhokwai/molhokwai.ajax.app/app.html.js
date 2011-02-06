@@ -1,0 +1,279 @@
+// init
+molhokwai.ajax.app.dynamic.globals.command_element_id='command_json';
+var m_a_a_d_u_p=molhokwai.ajax.app.dynamic.ui.page;
+
+//<!-- 	process_functions
+var flow=function(app_name,entity_name,action,status){
+    if (action.toLowerCase()=='create' 
+        && (status || status.toLowerCase()=='done')){
+        window.location='/'+app_name+'/'+entity_name+'/read';
+    }
+};
+
+var on_submit=function(callbacks){
+    /*  ---------------------------------------------------------------------------------------------------------
+    //-- iframe
+    var iframe=document.getElementById('iframe');
+    iframe.src=document.getElementById('url').value;
+    //document.getElementById('iframe').document.write(iframe.document.body.innerHTML.replace('pre>', 'code>')>0);
+
+        ---------------------------------------------------------------------------------------------------------*/
+    $('#frame').html('...');
+    
+    var form_callback=null;
+    var result_callback=null;
+    if (callbacks && 'form' in callbacks){
+        form_callback=callbacks['form'];
+    }
+    if (callbacks && 'result' in callbacks){
+        result_callback=callbacks['result'];
+    }
+    else {
+        result_callback=function(json){
+            $('#frame').html(
+                'json.message : <br>&nbsp;&nbsp;'+json.message
+                + '<br>json.result : <br>&nbsp;&nbsp;'+json.result
+                );
+          };
+      }
+    
+    //-- json get
+    $.getJSON(
+        $('#url').val(),
+        {
+            'command_json' : molhokwai.ajax.app.dynamic.command.get(null, 'server', form_callback)
+        },
+        result_callback
+    );
+
+    return false;
+}
+
+var on_fields_submit=function(){
+    $('#command_json').val(molhokwai.ajax.app.dynamic.ui.form.generate.command('command_fieldset'));
+    on_submit(
+        { 
+          'result' :
+            function(json){
+              if (json.message.indexOf('done')>=0){
+                  flow(
+                      m_a_a_d_u_p.app_name,
+                      m_a_a_d_u_p.entity_name,
+                      m_a_a_d_u_p.purpose,
+                      true
+                  );
+              }
+              $('#frame').html(
+                  'json.message : <br>&nbsp;&nbsp;'+json.message
+                  + '<br>json.result : <br>&nbsp;&nbsp;'+json.result
+                  );
+            }
+        }
+    );
+    return false;
+}
+
+var read_entity=function(json){
+    try{
+        $('#frame').html(
+            'json.message : <br>&nbsp;&nbsp;'+json.message
+            + '<br>nr of entities: <br>&nbsp;&nbsp;'+json.result.length
+            );
+        var entity=eval('('+json.result[0]+')')._entity;
+        var fields=[];
+        for(k in entity){
+          fields.push(
+            {
+              'name'  : k,
+              '_type' : (typeof(entity[k])=='number'?'Number':'String'),
+              'value' : entity[k]
+            }
+          );
+        }
+        m_a_a_d_u_p.entity.fields=fields;
+        
+        build_form(
+            m_a_a_d_u_p.entity_name,
+            m_a_a_d_u_p.purpose,
+            m_a_a_d_u_p.entity.fields,
+            []
+        );
+        
+        if (m_a_a_d_u_p.purpose.toLowerCase()=='read'){
+            read_entities(json);
+        }
+    }
+    catch(e){ 
+        error_display(json,e);
+    }
+};
+
+var build_form=function(entity_name,crud,fields,conditions_lines){
+    molhokwai.ajax.app.dynamic.ui.form.generate.html(
+        entity_name,
+        crud.toUpperCase(),
+        fields,
+        conditions_lines,
+        'command_fieldset'
+    );
+    
+    if (crud.toLowerCase()=='create'){
+        $("#app_form")[0].reset();
+    }
+}
+
+var read_entities=function(json){
+    try{
+        molhokwai.ajax.app.dynamic.ui.form.generate.list.html(
+            m_a_a_d_u_p.entity_name,
+            json,
+            'list_fieldset'
+        );
+    }
+    catch(e){
+        error_display(json,e);
+    }
+}
+
+var read_pages=function(entity_name,crud,fields,conditions_lines){
+    try {
+        // > output
+        molhokwai.ajax.app.dynamic.ui.pages.read(
+            {
+              'entity_name' : entity_name,
+              'crud'        : crud,
+              'fields'      : fields,
+              'conditions_lines'  : conditions_lines
+            },
+            'command_json',
+            'command_form',
+            {
+              'result' : 
+                /* generate crud page links */
+                function(json){
+                    this.tr=function(link_path,entity,i,index, show_crud){
+                        var tr=document.createElement('tr');
+                        var td=document.createElement('td');
+                        var a=document.createElement('a');
+                        td.innerHTML='';
+                        
+                        var td_link_path=link_path;
+                        if (i==0 && !index){
+                            td_link_path=link_path.replace('/[crud]','');
+                        }
+                        var td_link_text='';
+                        
+                        for(k in entity){
+                          td_link_path=td_link_path.replace('['+k+']',entity[k]);
+                          if (k!='page_entity'){
+                            td_link_text+=entity[k];
+                          }
+                        }
+                        if (i==0 && !index){
+                            td_link_text='index';
+                        }
+                        
+                        a.href=td_link_path;
+                        a.innerHTML=td_link_text;
+
+                        $(td).append(a);
+                        $(tr).append(td);
+                        
+                        return tr
+                    };
+                    
+                    var link_path='/crud/[page_entity]/[crud]';
+                    try{
+                        $('#pages_menu').html('');
+                        
+                        var json_array=json.result;
+                        
+                        var table=document.createElement('table');
+                        for(var i=0;i<json_array.length;i++){
+                            var entity=eval("("+json_array[i]+")")._entity;
+                            
+                            /* tr th */
+                            if (i==0){
+                                var tr=document.createElement('tr');
+                                var th=document.createElement('th');
+                                th.innerHTML='';
+                                
+                                for(k in entity){
+                                  if (k=='page_entity'){
+                                      th.innerHTML+=entity[k]+' ';
+                                  }
+                                  else {
+                                      // nothing: only page entity
+                                      // th.innerHTML+=k+' ';
+                                  }
+                                }
+                                $(tr).append(th);
+                                $(table).append(tr);
+                            
+                                /* tr 'index' */
+                                var tr=this.tr(link_path,entity,i);
+                                $(table).append(tr);
+                            }
+                            
+                            /* trs' tds */
+                            var tr=this.tr(link_path,entity,i,true);
+                            $(table).append(tr);
+                        }
+                        
+                        $('#pages_menu').append(table);
+                    }
+                    catch(e){
+                        error_display(json,e);
+                        $('#command_form')[0].innerHTML+=e.message;
+                    }
+                }
+            }
+        );
+    }
+    catch(e){
+        error_display(null, e);
+        $('#command_form')[0].innerHTML+='<br/ >'+e.message;
+    }
+};
+
+var error_display=function(json, e){
+    if (json){
+        if (json.message.indexOf('eval("(" + json.result[0] + ")")')>=0
+            || json.message.indexOf('No implementation for kind')>=0){
+            $('#command_fieldset').html('no data created yet... (<a href="/">creation command page</a>)');
+        }
+        else{
+            $('#command_fieldset').append(json.message);
+        }
+    }
+    if (e){
+        $('#command_form').append(e.message);
+    }
+}
+// 	end #process_functions -->
+
+$(document).ready(function(){
+    var sections=window.location.href.split('/');
+    var _tmp=sections;
+    sections=[];
+    for(var i=0;i<_tmp.length;i++){
+        if (_tmp[i]!='' && _tmp[i]!=null){
+            sections.push(_tmp[i]);
+        }
+    }
+
+    var protocol_host=sections[0]+'//'+sections[1];
+    $('#url').val(protocol_host+'/process?module=dynamic_ajax_app&output=json');
+    
+    if (sections.length>4){
+        m_a_a_d_u_p.init(sections[2],sections[3],sections[4]);
+        $('#command_json').html('read '+m_a_a_d_u_p.entity_name);
+        on_submit({ 'result' : read_entity, 'form' : read_pages });
+    }
+    else{
+        m_a_a_d_u_p.init(sections[2],sections[3]);
+        $('#command_json').html('read '+m_a_a_d_u_p.entity_name);
+        on_submit({ 'result' : read_entities, 'form' : read_pages });
+    }
+});
+

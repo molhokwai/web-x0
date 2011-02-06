@@ -1,0 +1,150 @@
+application: molhokwai-net
+version: 8
+runtime: python
+api_version: 1
+
+default_expiration: "1d"
+
+handlers:
+  - url: /favicon.ico
+    static_files: static/images/favicon.ico
+    upload: static/images/favicon.ico
+
+  - url: /static/images/fileicons/.*
+    script: zip_handler.py
+
+  - url: /fckeditor/.*
+    script: zip_handler.py
+
+  - url: /static
+    static_dir: static
+
+  - url: /admin/.*
+    script: main.py
+    login: required
+
+  - url: /process.*
+    script: process/dispatcher.py
+
+  - url: /remote_api
+    script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+    login: admin
+
+  - url: /_.pdf
+    static_files: static/files/pages.molhokwai.net/_.pdf
+    upload: static/files/pages.molhokwai.net/_.pdf
+  - url: /BeautifulWomen.htm
+    static_files: static/files/pages.molhokwai.net/BeautifulWomen.htm
+    upload: static/files/pages.molhokwai.net/BeautifulWomen.htm
+  - url: /canvas.html
+    static_files: static/files/pages.molhokwai.net/canvas.html
+    upload: static/files/pages.molhokwai.net/canvas.html
+  - url: /common.css
+    static_files: static/files/pages.molhokwai.net/common.css
+    upload: static/files/pages.molhokwai.net/common.css
+  - url: /component_design_0.jpg
+    static_files: static/files/pages.molhokwai.net/component_design_0.jpg
+    upload: static/files/pages.molhokwai.net/component_design_0.jpg
+  - url: /contentpage.py
+    static_files: static/files/pages.molhokwai.net/contentpage.py
+    upload: static/files/pages.molhokwai.net/contentpage.py
+  - url: /crystalkingdesigns_aboutus.htm
+    static_files: static/files/pages.molhokwai.net/crystalkingdesigns_aboutus.htm
+    upload: static/files/pages.molhokwai.net/crystalkingdesigns_aboutus.htm
+  - url: /crystalkingdesigns_amathyst.htm
+    static_files: static/files/pages.molhokwai.net/crystalkingdesigns_amathyst.htm
+    upload: static/files/pages.molhokwai.net/crystalkingdesigns_amathyst.htm
+  - url: /crystalkingdesigns_index.htm
+    static_files: static/files/pages.molhokwai.net/crystalkingdesigns_index.htm
+    upload: static/files/pages.molhokwai.net/crystalkingdesigns_index.htm
+  - url: /crystalkingdesigns_receivedonate.htm
+    static_files: static/files/pages.molhokwai.net/crystalkingdesigns_receivedonate.htm
+    upload: static/files/pages.molhokwai.net/crystalkingdesigns_receivedonate.htm
+  - url: /crystalkingdesigns_style.css
+    static_files: static/files/pages.molhokwai.net/crystalkingdesigns_style.css
+    upload: static/files/pages.molhokwai.net/crystalkingdesigns_style.css
+  - url: /dark.html
+    static_files: static/files/pages.molhokwai.net/dark.html
+    upload: static/files/pages.molhokwai.net/dark.html
+  - url: /feedblitz_subscription.htm
+    static_files: static/files/pages.molhokwai.net/feedblitz_subscription.htm
+    upload: static/files/pages.molhokwai.net/feedblitz_subscription.htm
+  - url: /jquery.js
+    static_files: static/files/pages.molhokwai.net/jquery.js
+    upload: static/files/pages.molhokwai.net/jquery.js
+  - url: /molhokwai.common.js
+    static_files: static/files/pages.molhokwai.net/molhokwai.common.js
+    upload: static/files/pages.molhokwai.net/molhokwai.common.js
+  - url: /molhokwai.misc.js
+    static_files: static/files/pages.molhokwai.net/molhokwai.misc.js
+    upload: static/files/pages.molhokwai.net/molhokwai.misc.js
+  - url: /molhokwai.util.js
+    static_files: static/files/pages.molhokwai.net/molhokwai.util.js
+    upload: static/files/pages.molhokwai.net/molhokwai.util.js
+  - url: /molhokwai.web.process.js
+    static_files: static/files/pages.molhokwai.net/molhokwai.web.process.js
+    upload: static/files/pages.molhokwai.net/molhokwai.web.process.js
+  - url: /molhokwai.web.space.css
+    static_files: static/files/pages.molhokwai.net/molhokwai.web.space.css
+    upload: static/files/pages.molhokwai.net/molhokwai.web.space.css
+  - url: /molhokwai.web.style.css
+    static_files: static/files/pages.molhokwai.net/molhokwai.web.style.css
+    upload: static/files/pages.molhokwai.net/molhokwai.web.style.css
+  - url: /molhokwai.widgets.blogger.xml
+    static_files: static/files/pages.molhokwai.net/molhokwai.widgets.blogger.xml
+    upload: static/files/pages.molhokwai.net/molhokwai.widgets.blogger.xml
+  - url: /Ombres.htm
+    static_files: static/files/pages.molhokwai.net/Ombres.htm
+    upload: static/files/pages.molhokwai.net/Ombres.htm
+  - url: /Oooh.html
+    static_files: static/files/pages.molhokwai.net/Oooh.html
+    upload: static/files/pages.molhokwai.net/Oooh.html
+  - url: /options_and_paths.htm
+    static_files: static/files/pages.molhokwai.net/options_and_paths.htm
+    upload: static/files/pages.molhokwai.net/options_and_paths.htm
+  - url: /rpc_relay.html
+    static_files: static/files/pages.molhokwai.net/rpc_relay.html
+    upload: static/files/pages.molhokwai.net/rpc_relay.html
+  - url: /style.css
+    static_files: static/files/pages.molhokwai.net/style.css
+    upload: static/files/pages.molhokwai.net/style.css
+  - url: /template.htm
+    static_files: static/files/pages.molhokwai.net/template.htm
+    upload: static/files/pages.molhokwai.net/template.htm
+  - url: /theinvisibleladder.html
+    static_files: static/files/pages.molhokwai.net/theinvisibleladder.html
+    upload: static/files/pages.molhokwai.net/theinvisibleladder.html
+  - url: /ui.core.js
+    static_files: static/files/pages.molhokwai.net/ui.core.js
+    upload: static/files/pages.molhokwai.net/ui.core.js
+  - url: /ui.draggable.js
+    static_files: static/files/pages.molhokwai.net/ui.draggable.js
+    upload: static/files/pages.molhokwai.net/ui.draggable.js
+  - url: /waxingandwaning.html
+    static_files: static/files/pages.molhokwai.net/waxingandwaning.html
+    upload: static/files/pages.molhokwai.net/waxingandwaning.html
+  - url: /WhoIAm.htm
+    static_files: static/files/pages.molhokwai.net/WhoIAm.htm
+    upload: static/files/pages.molhokwai.net/WhoIAm.htm
+  - url: /Youllbejustfine.htm
+    static_files: static/files/pages.molhokwai.net/Youllbejustfine.htm
+    upload: static/files/pages.molhokwai.net/Youllbejustfine.htm
+
+  - url: /.*
+    script: main.py
+
+skip_files: |
+ ^(.*/)?(
+ (app\.yaml)|
+ (app\.yml)|
+ (index\.yaml)|
+ (index\.yml)|
+ (#.*#)|
+ (.*~)|
+ (.*\.py[co])|
+ (.*/RCS/.*)|
+ (\..*)|
+ (dev/.*)|
+ (tests/.*)|
+ (docs/.*)|
+ )$

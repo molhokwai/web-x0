@@ -1,0 +1,47 @@
+question:
+	- is there any eclipse plug in as simple to use as this file for the same purpose?
+
+environnement and locations:
+	- test files: .../dev_molhokwai_net/files/site/pages/content/en/apps/buytheworldback-com/.debug
+	- related files: .../dev_molhokwai_net/files/site/pages/content/en/apps/buytheworldback-com/
+
+definitions:
+	- validation : complete functionality testing, from end user point-of-view
+	- test : atomic unit-testing like validation
+
+development cycle:
+	passed validation:
+		- manage.process : entitymanager.create
+		- manage.process : querymanager.read
+							limitations in nesting possibilities (see .update below)?
+		- manage.process : entitymanager.update
+							works but with limitations in nesting possibilities
+							and operators usage (analysis of Gql restrictions necessary)
+		- manage.process : entitymanager.delete
+							limitations in nesting possibilities (see .update above)?
+
+	in validation:
+		- manage.process : entitymanager.create
+		- manage.process : querymanager.read
+							limitations in nesting possibilities (see .update below)?
+		- manage.process : entitymanager.update
+							works but with limitations in nesting possibilities
+							and operators usage (analysis of Gql restrictions necessary)
+		- manage.process : entitymanager.delete
+							limitations in nesting possibilities (see .update above)?
+
+	passed testing:
+		- manage.process : entitymanager.create
+		- manage.process : querymanager.read
+							limitations in nesting possibilities (see .update below)?
+		- manage.process : entitymanager.update
+							works but with limitations in nesting possibilities
+							and operators usage (analysis of Gql restrictions necessary)
+		- manage.process : entitymanager.delete
+							limitations in nesting possibilities (see .update above)?
+	in testing:
+
+	ready for testing:
+		- manage.process : entitymanager.delete
+
+	in development:

@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+
+Name       : Combination     
+Description: A two-column, fixed-width design with dark color scheme.
+Version    : 1.0
+Released   : 20101222
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Fast Online Prototyping</title>
+<link href="/static/html/fotp/style.css" rel="stylesheet" type="text/css" media="screen" />
+</head>
+<body>
+<div id="wrapper">
+	<div id="header-wrapper">
+		<div id="header">
+			<div id="logo">
+				<h1><a href="#">Prototyping </a></h1>
+				<p>fast online application prototyping tool</p>
+			</div>
+			<div id="menu">
+				<ul>
+					<li class="current_page_item"><a href="index.html">Home</a></li>
+					<li><a href="blog.html">Blog</a></li>
+					<li><a href="/" target="_blank">To Demo</a></li>
+					<li><a href="#">Download</a></li>
+					<li><a href="about.html">About</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- end #header -->
+	<div id="page">
+		<div id="page-bgtop">
+			<div id="page-bgbtm">
+				<div id="content">
+					<div class="post">
+						<h2 class="title"><a href="#">Fast Prototyping, Online </a></h2>
+						<div class="entry">
+							<p>This is intended for (web) developpers, designers & programmers who want to be able to have application prototypes running, <em>fast</em>, whenever an idea pops up. It's a database-driven application creation tool, that enables one to have a crud 
+							application prototype up & running with just a few lines of declaration code. But before you eventually jump in, here are is a short list of tools that might serve your needs best.</p>
+
+							<p>Amongst others:</p>
+
+							<ul>
+							  <li><a href="http://www.zoho.com/creator/" target="_blank">Zoho creator</a></li>
+							  <li><a href="http://www.jotform.com" target="_blank">jotform</a></li>
+							  <li><a href="http://www.dbstract.com/" target="_blank">dbstract</a></li>
+							  <li><a href="http://www.google.com/google-d-s/forms/" target="_blank">google forms</a></li>
+							</ul>
+							
+							<p><a href="http://www.zoho.com/creator/" target="_blank">Zoho creator</a> and <a href="http://www.dbstract.com/" target="_blank">dbstract</a> offer (fully) featured application creation, with a flexible & dynamic user interface for zoho; 
+							<a href="http://www.jotform.com" target="_blank">jotform</a> offers the same type of flexible, dynamic user interface for online form creation, and <a href="http://www.google.com/google-d-s/forms/" target="_blank">google forms</a> 
+							offers forms directly linked to standard (online) spreadheets.</p>
+							
+							<p>And for developers:</p>
+							<ul>
+							  <li><a href="http://www.web2py.com" target="_blank">web2py</a></li>
+							  <li><a href="http://hobocentral.net/" target="_blank">hobo</a> (on rails)</li>
+							  <li><a href="http://code.google.com/appengine/" target="_blank">google app engine</a></li>
+							</ul>
+							
+							<p><a href="http://www.web2py.com" target="_blank">Web2py</a> is a magical, powerful, beautiful framework for application development, <a href="http://hobocentral.net/">hobo</a> is a powerful extension of/on rails model (not totally informed 
+							declaration here), and <a href="http://code.google.com/appengine/" target="_blank">google app engine</a> (python version, with django) is <u>the</u> web application server, <u>the</u> web application development platform, for fast application development, 
+							deployment, distribution (<a href="http://www.google.be/search?sourceid=chrome&ie=UTF-8&q=web2py+on+google+app+engine" target="_blank">web2py on google app engine</a> is a dream come true)...</p>
+							
+							<p>So: yat*? Well: yes. Maybe useful, maybe not, but meant to do something that no other does (to the extent of the information found/available): <em>create application prototypes by just writing (a few) declaration lines, <u>online</u></em>.</p>
+
+							<p>The flow of Ideas popping out everywhere, anywhere, anytime is speeding up. So the purpose of this app is to <em>let these ideas come to reality</em>, in minutes, and evolve from there.</p>
+							
+							<p>Here: <a href="/demo" target="_blank">/demo</a>.</p>
+							
+							<small class="notes">*Yet another tool.</small>
+
+						</div>
+						<div class="byline">
+							<p class="meta">January 09, 2011 Posted by <a href="#">...</a></p>
+							<p class="links"><a href="#">Read More</a>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" title="b0x w">Comments</a></p>
+						</div>
+					</div>
+
+					<div style="clear: both;">&nbsp;</div>
+				</div>
+				
+				<!-- end #content -->
+				<div id="sidebar">
+					<ul>
+						<li>
+							<div id="search" >
+								<form method="get" action="#">
+									<div>
+										<input type="text" name="s" id="search-text" value="" />
+										<input type="submit" id="search-submit" value="GO" />
+									</div>
+								</form>
+							</div>
+							<div style="clear: both;">&nbsp;</div>
+						</li>
+						<li>
+							<h2>News & Updates</h2>
+							<p>First version yet to come, with full applications building features....</p>
+						</li>
+						<li>
+							<h2>Categories</h2>
+							<ul>
+								<li><a href="#">Development</a></li>
+								<li><a href="#">Content & Data Management</a></li>
+								<li><a href="#">Prototyping</a></li>
+								<li><a href="#">Large Scale Application</a></li>
+							</ul>
+						</li>
+						<li>
+							<h2>Blogroll</h2>
+							<ul>
+								<li><a href="#">...</a></li>
+							</ul>
+						</li>
+						<!-- li>
+							<h2>Archives</h2>
+							<ul>
+								<li><a href="#">Aliquam libero</a></li>
+								<li><a href="#">Consectetuer adipiscing elit</a></li>
+								<li><a href="#">Metus aliquam pellentesque</a></li>
+								<li><a href="#">Suspendisse iaculis mauris</a></li>
+								<li><a href="#">Urnanet non molestie semper</a></li>
+								<li><a href="#">Proin gravida orci porttitor</a></li>
+							</ul>
+						</li -->
+					</ul>
+				</div>
+				<!-- end #sidebar -->
+				
+				<div style="clear: both;">&nbsp;</div>
+			</div>
+		</div>
+	</div>
+	<!-- end #page -->
+	<div id="footer">
+		<p>Copyright (c) 2008 Sitename.com. All rights reserved. Design by <a href="http://www.freecsstemplates.org/"> CSS Templates</a>.</p>
+	</div>
+</div>
+<!-- end #footer -->
+</body>
+</html>

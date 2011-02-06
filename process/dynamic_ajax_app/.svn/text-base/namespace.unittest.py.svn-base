@@ -1,0 +1,119 @@
+import unittest
+import sys
+import os.path
+import exceptions
+
+# Change the following line to reflect wherever your
+# app engine installation and the mocker library are
+APP_PATH = 'C:/Development/workspaces/molhokwai.net/app'
+APPENGINE_PATH = 'C:/Program Files/Google/google_appengine'
+
+# Add app-engine related libraries to your path
+paths = [
+    APP_PATH,
+    APPENGINE_PATH,
+    os.path.join(APPENGINE_PATH, 'lib', 'django'),
+    os.path.join(APPENGINE_PATH, 'lib', 'webob'),
+    os.path.join(APPENGINE_PATH, 'lib', 'yaml', 'lib'),
+    os.path.join(APPENGINE_PATH, 'google', 'appengine'),
+]
+
+for path in paths:
+  if not os.path.exists(path):
+    raise 'Path does not exist: %s' % path
+sys.path = paths + sys.path
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+os.environ['SERVER_SOFTWARE'] = 'Development'
+
+class TestUtil(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_entity_creation(self):
+        """This test passes, but cannot be executed from the command line.
+            Mockup framework needed to be able to execute it as a true unit test.
+        """
+        command_json={
+              'entities' :
+              [
+                {
+                    'type':'Test',
+                    'action':'create',
+                    'fields': {
+                                'create':[
+                                    {'name':'test','type':'String','value':'2nd test'},
+                                    {'name':'test_one','type':'String','value':'test1 value'},
+                                    {'name':'test_two','type':'String','value':'test2 value'}
+                                ]
+                            }
+                },
+                {
+                    'type':'Test',
+                    'action':'create',
+                    'fields': {
+                                'create':[
+                                    {'name':'test','type':'String','value':'2nd test: 2nd entity'},
+                                    {'name':'test_one_two','type':'String','value':'test1_2 value'},
+                                    {'name':'test_two_two','type':'String','value':'test2_2 value'},
+                                    {'name':'test_two_three','type':'String','value':'test2_3 value'}
+                                ]
+                            }
+                }
+               ]
+            }
+        """
+        import manage
+        manager=manage.Manage({'action' : None, 'sub_action' : None,
+                  'command_json' : None, 'output' : None
+                })
+        manager.parameters['command_json']=str(command_json)
+        result=manager.process()
+
+        self.assertEqual(result['message'],'call(s) succeeded')
+        """
+
+
+    def test_entity_update(self):
+        """This test passes, but cannot be executed from the command line.
+            Mockup framework needed to be able to execute it as a true unit test.
+        """
+        command_json={
+              'entities' :
+              [
+                {
+                    'type':'Test',
+                    'action':'update',
+                    'fields': {
+                                'create':[
+                                    {'name':'test','type':'String','value':'2nd test update'},
+                                    {'name':'test_one','type':'String','value':'test1 value update'},
+                                    {'name':'test_two','type':'String','value':'test2 value update'}
+                                ]
+                            },
+                    'conditions':
+                        {
+                            'main' :[{'name':'test','type':'String','value':'2nd test','comp_operator':'eq','cond_operator':'and'}],
+                            'nested' :
+                                {
+                                    'main' : [{'name':'test','type':'String','value':'2nd test: 2nd entity','comp_operator':'eq','cond_operator':'or'},
+                                              {'name':'test_one','type':'String','value':'test1 value','comp_operator':'eq'}]
+                                }
+                        }
+                }
+            ]
+        }
+        """
+        import manage
+        manager=manage.Manage({'action' : None, 'sub_action' : None,
+                  'command_json' : None, 'output' : None
+                })
+        manager.parameters['command_json']=str(command_json)
+        result=manager.process()
+
+        self.assertEqual(result['message'],'call(s) succeeded')
+        """
+
+if __name__ == '__main__':
+    unittest.main()

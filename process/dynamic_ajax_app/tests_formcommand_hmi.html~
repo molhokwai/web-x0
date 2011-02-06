@@ -1,0 +1,308 @@
+<html>
+    <head>
+        <title>molhokwai: web 3.0 paradigm developments</title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="keywords" content="developmentn dynamic, ajax, app, testing, web, network, connectedness, paradigm, 3.0, implementation, connect, connection, test" />
+        <meta name="description" content="molhokwai devevelopments: web 3.0, network, connectedness paradigm implementation development dynamic ajax app testing." />
+        <meta name="google-site-verification" content="r0Pfq2q9SK7Pk9gkh1NnbsV28-mQoD8LoIGOeUhfer8" />
+        
+		    <!-- scripts_and_styles -->
+        <style type="text/css">
+            @import "/static/css/dynamic_ajax_app/base.css";
+            
+            label {
+            	float:left;
+            	min-width: 10em;
+            }
+            #rbl span, #rbl input {
+            	float:right;
+            }
+            label:first-letter, #rbl span:first-letter {
+            	font-weight:bold;
+            	text-transform:capitalize;
+            	font-size: 1.1em;
+            }
+            input, select, textarea {
+            	border-width: 2px;
+            }
+            
+            hr {
+              clear:both;
+              margin: 5% 0;
+            }
+            #command_json {
+              background-color: black;
+              color: whitesmoke;
+            	font-size:1.05em;
+            }
+            
+            #command_form div {
+              clear:both;
+            }
+            #command_form h3 {
+              text-align:center;
+            }
+            #command_form h3:first-letter {
+              text-transform:capitalize;
+            }
+        </style>
+		<script>
+		function googleTranslateElementInit() {
+		  new google.translate.TranslateElement({
+			pageLanguage: 'en',
+			includedLanguages: 'zh-CN,nl,fr,de,ht,ru,es,sw'
+		  }, 'google_translate_element');
+		}
+		</script>
+		<script id="google-translate-element-init" 	src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+		<script id="jquery" 		        type="text/javascript" src="/static/js/components/jquery/jquery.js"></script>
+		<script id="molhokwai_common" 	type="text/javascript"  src="/static/js/net.molhokwai/molhokwai.common.js"></script>
+		<script id="command_generation" 	type="text/javascript"  src="/static/js/net.molhokwai/molhokwai.ajax.app.js"></script>
+		<script type="text/javascript" >
+        // init
+        molhokwai.ajax.app.dynamic.globals.command_element_id='command_json';
+        
+        //<!-- 	process_functions
+        var on_submit=function(){
+            /*  ---------------------------------------------------------------------------------------------------------
+            //-- iframe
+            var iframe=document.getElementById('iframe');
+            iframe.src=document.getElementById('url').value;
+            //document.getElementById('iframe').document.write(iframe.document.body.innerHTML.replace('pre>', 'code>')>0);
+
+                ---------------------------------------------------------------------------------------------------------*/
+            $('#frame').html('...');
+            
+            //-- json get
+            $.getJSON(
+                document.getElementById('url').value,
+                {
+                    'command_json' : molhokwai.ajax.app.dynamic.command.get(null, 'server', build_form)
+                },
+                function(json){
+                    try{
+                        $('#frame').html(
+                            'json.message : <br>&nbsp;&nbsp;'+json.message
+                            + '<br>json.result : <br>&nbsp;&nbsp;'+json.result
+                            );
+                    }
+                    catch(e){ alert(e.toString()); }
+                }
+            );
+
+            return false;
+        }
+
+        var on_fields_submit=function(){
+            var command_text='';
+            command_text+=$('#command_form div h3').html();
+            command_text+='\n';
+            
+            $('#command_form div').each(function(){
+                $(this).find('label').each(function(){
+                    var f_name=$(this).html();
+                    if (f_name!='where' && f_name!='&nbsp;'){
+                        var f_value='';
+                        
+                        $(this).parent().find(':text').each(function(){
+                            f_value=$(this).val();
+                        });
+                        $(this).parent().find('textarea').each(function(){
+                            f_value=$(this).val();
+                        });
+                        $(this).parent().find('select').each(function(){
+                            f_value=$(this).val();
+                        });
+                        
+                        try{
+                            if (parseFloat(f_value)==f_value){
+                                f_value=parseFloat(f_value);
+                            }
+                        }
+                        catch(e){
+                        }
+                        
+                        var f_quot=molhokwai.ajax.app.dynamic.generate.field.get_type_quote_list(f_value)[1];
+                        command_text+=f_name+'='+f_quot+f_value+f_quot+',';
+                    }
+                });
+            });
+            command_text=command_text.substring(0,command_text.length-2);
+            command_text+='\n';
+            
+            $('#command_form div').each(function(){
+                $(this).find('label').each(function(){
+                    var f_name=$(this).html();
+                    if (f_name=='where'){
+                      $(this).parent().find('textarea').each(function(){
+                          command_text+=$(this).val();
+                      });
+                    }
+                });
+            });
+            
+            $('#command_json').val(command_text);
+            
+            return false;
+        }
+
+        var set_crud=function(crud){
+            var lines=$('#JSON_TEST_DATA_'+crud).val().replace('\'','"').split('\n');
+            var comm_lines='';
+            for(var i=0; i<lines.length; i++){
+              if (i>0) comm_lines+='\n';
+              comm_lines+=molhokwai.ajax.app.dynamic.format.command.line(lines[i]);
+            }
+            $('#command_json').val(comm_lines);
+        };
+        
+        var build_form=function(entity_name,crud,fields,conditions_lines){
+            try {
+                $('#command_form').html(' ');
+                
+                fields=eval(fields);
+                conditions_lines=eval(conditions_lines);
+
+                $('#command_form').attr('name', entity_name);
+
+                var e_div=document.createElement('div');
+                var e_h3=document.createElement('h3');
+                $(e_h3).html(crud+' '+entity_name);
+                $(e_div).append(e_h3)
+                $('#command_form').append(e_div);
+                
+                for (var i=0; i<fields.length;i++)
+                {
+                    var field=eval('('+fields[i]+')');
+                    var div=document.createElement('div');
+                    var label=document.createElement('label');
+                    $(label).attr({ 'for': field.name });
+                    $(label).html(field.name);
+
+                    var input=document.createElement('input');
+                    $(input).attr({ 'type': field._type });
+                    $(input).attr({ 'name': field.name });
+                    $(input).val(field.value);
+
+                    $(div).append(label);
+                    $(div).append(input);
+                    $('#command_form').append(div);
+                }
+              
+                if (conditions_lines.length>0){
+                    var w_div=document.createElement('div');
+                    var w_label=document.createElement('label');
+                    $(w_label).html('where');
+
+                    var w_textarea=document.createElement('textarea');
+                    $(w_textarea).val(conditions_lines.join(' '));
+                    
+                    $(w_div).append(w_label);
+                    $(w_div).append(w_textarea);
+                    $('#command_form').append(w_div);
+                }
+
+                var s_div=document.createElement('div');
+                var s_label=document.createElement('label');
+                $(s_label).html('&nbsp;');
+
+                var s_input=document.createElement('input');
+                $(s_input).attr({ 'type':'button', 'class':'submit' , 'onclick':'on_fields_submit()' });
+                $(s_input).val('set');
+
+                $(s_div).append(s_label);
+                $(s_div).append(s_input);
+                $('#command_form').append(s_div);
+            }
+            catch(e){
+                $('#command_form').append(e.message);
+            }
+        }
+        // 	end #process_functions -->
+
+        $(document).ready(function(){
+            var sections=window.location.href.split('/');
+            var protocol_host=sections[0]+'//'+sections[1]+sections[2];
+            $('#url').val(protocol_host+'/process?module=dynamic_ajax_app&output=json');
+        });
+		</script>
+		<noscript>YOU DO NOT HAVE JAVASCRIPT ENABLED. THIS APPLICATION MIGHT NOT WORK PROPERLY.</noscript>
+    </head>
+    <body class="body">
+        <div id="wrapper" class="width40pc margt5pc marg-auto padtb1pc padlr2pc border-std gradient">
+
+            <div id="content">
+                <h2>Test</h2>
+				<form id="app_form" action="" method="post" onsubmit="on_submit(); return false;">
+						<p><label for="url">test url</label> <input type="text" name="url" size="20" id="url" value="http://localhost:81/process?module=dynamic_ajax_app&output=json"/></p>
+						<hr/>
+				    <div id="command_form"> <!--  onsubmit="on_fields_submit(); return false;" -->
+				      <label for="form">Form:</label>
+				    </div>
+						<hr/>
+						<p>
+						    <label for="command_json">Json command:</label>
+						    <textarea id="command_json" name="command_json" rows="5" class="font-size08em" style="width:65em;"></textarea>
+						</p>
+						<p id="rbl" class="margr8pc">
+						    <span>delete</span><input name="crud" type="radio" value="delete" onclick="set_crud('DELETE')"/> <span>update</span><input name="crud" type="radio" value="update" onclick="set_crud('UPDATE')"/>
+						    <span>read</span><input name="crud" type="radio" value="read" onclick="set_crud('READ')"/> <span>create</span><input name="crud" type="radio" value="create" onclick="set_crud('CREATE')"/>
+						</p>
+						<div class="clear"></div>
+						<p><label for="submit">&nbsp;</label><input type="submit" class="right" value="Submit"/></p>
+					</fieldset>
+				</form>
+				
+				<div id='frame' class="width80pc border-std margt10pc pad2pc">&nbsp;</div>
+
+            </div>
+
+            <div id="footer" class="left margl3pc font-size07em italic width90pc">
+                <h3 class="margb-03pc"></h3>
+                <span class="display-block"></span>
+                <span class="display-block"></span>
+            </div>
+     
+            <div class="clear"></div>
+        </div>
+
+        <input id="JSON_TEST_DATA_CREATE" type="hidden" 
+            value='create Test
+				           test="test value",test_one="test1 value",test_two="test2 value"'
+	      />
+	
+        <input id="JSON_TEST_DATA_READ" type="hidden" 
+            value='read Test
+                   test eq "test value" and test_one == "test1 value"'
+	      />
+	
+        <input id="JSON_TEST_DATA_UPDATE" type="hidden" 
+            value='update Test
+                  test=test value update,test_one=test1 value update,test_two=test2 value update
+                  test eq "test value" and test_one == "test1 value"'
+       />
+	
+        <input id="JSON_TEST_DATA_DELETE" type="hidden" 
+            value='delete Test
+                  test="test value update"
+                  test=="test value update" and test_one eq "test1 value update"'
+        />
+
+        <script type="text/javascript" id="tracking_src">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+        </script>
+        <script type="text/javascript" id="tracking_process">
+            try {
+              var pageTracker = _gat._getTracker("UA-5101967-1");
+              pageTracker._initData();
+              pageTracker._trackPageview();
+            }
+            catch(e){
+            }
+        </script>
+        <!-- end #tracking -->
+    </body>
+</html>
+

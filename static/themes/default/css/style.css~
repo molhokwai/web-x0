@@ -1,0 +1,61 @@
+/* SPECIFIC */
+
+table {
+  width:100%;
+}
+table tbody tr th {
+  text-align: left;
+  text-indent: 2%;
+  text-transform:uppercase;
+}
+table tbody tr td {
+  text-indent:10%;
+}
+
+code {
+  font-size:0.85em;
+}
+
+label {
+	float:left;
+	min-width: 10em;
+}
+#rbl span, #rbl input {
+	float:right;
+}
+label:first-letter, #rbl span:first-letter {
+	font-weight:bold;
+	text-transform:capitalize;
+	font-size: 1.1em;
+}
+input, select, textarea {
+	border-width: 2px;
+}
+
+hr {
+  clear:both;
+  margin: 5% 0;
+}
+#command_json, #command_form {
+  background-color: black;
+  color: whitesmoke;
+}
+#command_json  {
+  font-size:0.90em;
+}
+#command_form code {
+  margin-left: 5%;
+  display:block;
+  font-size:0.95em;
+}
+
+#command_fieldset div {
+  clear:both;
+}
+#command_fieldset h3 {
+  text-align:center;
+}
+#command_fieldset h3:first-letter {
+  text-transform:capitalize;
+}
+

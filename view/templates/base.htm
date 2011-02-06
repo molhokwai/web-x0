@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>{% block title %} {% if title %} {{ title }} {% else %} {{ configuration.SYSTEM_TITLE }} {% endif %} {% endblock %} </title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="developmentn dynamic, ajax, app, testing, web, network, connectedness, paradigm, 3.0, implementation, connect, connection, test" />
+    <meta name="description" content="molhokwai devevelopments: web 3.0, network, connectedness paradigm implementation development dynamic ajax app testing." />
+    <meta name="google-site-verification" content="r0Pfq2q9SK7Pk9gkh1NnbsV28-mQoD8LoIGOeUhfer8" />
+
+	  {% block style %}
+      <style type="text/css">
+          @import "/static/css/base.css";
+          @import "/static/themes/{{ configuration.SYSTEM_THEME_NAME }}/css/style.css";
+	  </style>
+	  {% endblock %}
+
+		<script id="jquery" 		        type="text/javascript" src="/static/js/components/jquery/jquery.js"></script>
+		<script id="molhokwai_common" 	type="text/javascript"  src="/static/js/net.molhokwai/molhokwai.common.js"></script>
+		<script id="command_generation" 	type="text/javascript"  src="/static/js/net.molhokwai/molhokwai.ajax.app.js"></script>
+		<script id="command_generation" 	type="text/javascript"  src="/static/js/net.molhokwai/molhokwai.ajax.app.dynamic.ui.js"></script>
+
+	  {% block page_js %}
+	  {% endblock %}
+
+		<noscript>YOU DO NOT HAVE JAVASCRIPT ENABLED. THIS APPLICATION MIGHT NOT WORK PROPERLY.</noscript>
+</head>
+<body>
+    <iframe src="javascript:''" id="__gwt_historyFrame" style="display:none;width:0;height:0;border:0"></iframe>
+
+    <div id="wrapper" class="width40pc margt5pc marg-auto padtb1pc padlr2pc border-std gradient">
+	    {% block wrapper %}
+
+        <div id="content">
+          {% block content %}
+            <h2>{{ title }}</h2>
+		        <form id="app_form" action="" method="post" onsubmit="{% block app_form_on_submit %}on_submit({'form' : create_pages});{% endblock %} return false;">
+				        <p class="display-none"><label for="url">test url</label> <input type="text" name="url" size="20" id="url" value="http://localhost:81/process?module=dynamic_ajax_app&output=json"/></p>
+				        <hr/>
+		            <div>
+		              <fieldset id="command_fieldset">
+		              
+		              </fieldset>
+		            </div>
+				        <hr/>
+			        </fieldset>
+		        </form>
+		        
+		        show/hide command output<input type="checkbox" onclick="$('#command_output').toggle('visibility');" class="left margb1pc"/>
+		        
+		        <div class="clear"></div>
+		        
+		        <div id="command_output" class="display-none">
+				        <p>
+				            <label for="command_json">Json command:</label>
+				            <textarea id="command_json" name="command_json" rows="3" class="font-size08em" style="width:65em;"></textarea>
+				        </p>
+				        <div class="clear"></div>
+				        <p><label for="submit">&nbsp;</label><input type="submit" class="right" value="create pages"/></p>
+
+		            <div id='frame' class="width80pc border-std margt10pc pad2pc">&nbsp;</div>
+
+                <br/>
+                <br/>
+                <h3>output...</h3>
+                <div id="command_form" class="padlr2pc padtb2pc">&nbsp;</div>
+		        </div>
+          {% endblock %}
+        </div>
+        <!-- end #content -->
+
+        <div id="footer" class="left margl3pc font-size07em italic width90pc">
+            <h3 class="margb-03pc"></h3>
+            <span class="display-block">{{ configuration.FOOTER_HTML }}</span>
+            <span class="display-block"></span>
+        </div>
+ 
+        <div class="clear"></div>
+	    {% endblock %}
+    </div>
+    <!-- end #wrapper -->
+	  
+    {% block tracking %}
+    {% if configuration.ANALYTICS_ID %}
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+	  <!-- application ui js requires this script for custom tracking -->
+    <script type="text/javascript">
+        var init_error_alert=null;
+	      try{
+		      var pageTracker = _gat._getTracker("{{ configuration.ANALYTICS_ID }}");
+		      pageTracker._initData();
+		      pageTracker._trackPageview();
+	      }
+	      catch(e){
+		      // catch ga exception
+	      }
+    </script>
+    {% endif %}
+    {% endblock %}
+
+</body>
+</html>

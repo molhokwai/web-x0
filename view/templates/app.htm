@@ -1,0 +1,115 @@
+{% extends "base.htm" %}
+
+{% block page_js %}
+		<script type="text/javascript" >
+        // init
+        molhokwai.ajax.app.dynamic.globals.command_element_id='command_json';
+        var m_a_a_d_u_p=molhokwai.ajax.app.dynamic.ui.page;
+
+        //<!-- 	process_functions
+        var flow=function(app_name,entity_name,action,status){
+            if (action.toLowerCase()=='create' 
+                && (status || status.toLowerCase()=='done')){
+                window.location='/'+app_name+'/'+entity_name+'/read';
+            }
+        };
+        
+        var on_submit=function(callbacks){
+            /*  ---------------------------------------------------------------------------------------------------------
+            //-- iframe
+            var iframe=document.getElementById('iframe');
+            iframe.src=document.getElementById('url').value;
+            //document.getElementById('iframe').document.write(iframe.document.body.innerHTML.replace('pre>', 'code>')>0);
+
+                ---------------------------------------------------------------------------------------------------------*/
+            $('#frame').html('...');
+            
+            var form_callback=null;
+            var result_callback=null;
+            if (callbacks && 'form' in callbacks){
+                form_callback=callbacks['form'];
+            }
+            if (callbacks && 'result' in callbacks){
+                result_callback=callbacks['result'];
+            }
+            else {
+                result_callback=function(json)
+                {
+                    try{
+                        $('#frame').html(
+                            'json.message : <br>&nbsp;&nbsp;'+json.message
+                            + '<br>json.result : <br>&nbsp;&nbsp;'+json.result[0]
+                            );
+                        var entity=eval('('+json.result[0]+')')._entity;
+                        var fields=[];
+                        for(k in entity){
+                          fields.push(
+                            {
+                              'name'  : k,
+                              '_type' : (typeof(entity[k])=='number'?'Number':'String'),
+                              'value' : entity[k]
+                            }
+                          );
+                        }
+                        m_a_a_d_u_p.entity.fields=fields;
+                    }
+                    catch(e){ alert(e.toString()); }
+                };
+            }
+            
+            //-- json get
+            $.getJSON(
+                document.getElementById('url').value,
+                {
+                    'command_json' : molhokwai.ajax.app.dynamic.command.get(null, 'server', form_callback)
+                },
+                result_callback
+            );
+
+            return false;
+        }
+
+        var on_fields_submit=function(){
+            $('#command_json').val(molhokwai.ajax.app.dynamic.ui.form.generate.command('command_fieldset'));
+            on_submit(
+                { 
+                  'result' :
+                    function(json){
+                      if (json.message.indexOf('done')>=0){
+                          flow(
+                              m_a_a_d_u_p.app_name,
+                              m_a_a_d_u_p.entity_name,
+                              m_a_a_d_u_p.purpose,
+                              true
+                          );
+                      }
+                    }
+                }
+            );
+            return false;
+        }
+                
+        var build_form=function(entity_name,crud,fields,conditions_lines){
+            molhokwai.ajax.app.dynamic.ui.form.generate.html(
+                m_a_a_d_u_p.entity_name,
+                m_a_a_d_u_p.purpose,
+                m_a_a_d_u_p.entity.fields,
+                conditions_lines,
+                'command_form'
+            );
+        }
+        // 	end #process_functions -->
+
+        $(document).ready(function(){
+            var sections=window.location.href.split('/');
+            var protocol_host=sections[0]+'//'+sections[1]+sections[2];
+            $('#url').val(protocol_host+'/process?module=dynamic_ajax_app&output=json');
+            
+            m_a_a_d_u_p.init(sections[3],sections[4],sections[5]);
+            $('#command_json').html('read '+m_a_a_d_u_p.entity_name);
+            on_submit({ 'form' : build_form });
+        });
+		</script>
+{% endblock %}
+
+{% block app_form_on_submit %}{% endblock %}

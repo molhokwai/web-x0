@@ -1,0 +1,7 @@
+cron:
+- description: car share seats status notifications
+  url: /process/jobsdispatcher?action=carshareseatsstatuses
+  schedule: every 2 minutes
+- description: matches notifications
+  url: /process/jobsdispatcher?action=matches
+  schedule: every  2 minutes

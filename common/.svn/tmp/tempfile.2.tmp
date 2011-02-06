@@ -1,0 +1,587 @@
+# -*- coding: UTF-8 -*-
+import logging
+
+import google.appengine.api.urlfetch as urlfetch
+from django.utils import simplejson as json
+
+import urllib
+import settings
+
+def info(v):
+     return '%s = %r %s' % (v, v, type(v))
+
+def fetchHttpRequestData(parameters,url,request_output='json',request_method='POST'):
+    """Explicit
+
+        Args:
+            parameters : key - value dict
+            url : the base url
+            request_output : non json outputs handling to be implemented
+
+        Returns:    dict, String
+                    deserialized dict, raw serialized String
+    """
+    fetchResult = None
+    form_data = urllib.urlencode(parameters)
+    if request_method=='POST':
+        fetchResult = unicode(
+                            urlfetch.fetch(
+                               url=url,
+                               payload=form_data,
+                               method=urlfetch.POST
+                               ).content,
+                         errors='ignore'
+                       )
+    else:
+        fetchResult = unicode(
+                            urlfetch.fetch(
+                               url=url+'?'+str(form_data),
+                               method=urlfetch.GET
+                               ).content,
+                         errors='ignore'
+                       )
+    if request_output=='json':
+        return json.loads(fetchResult),fetchResult
+    else:
+        return fetchResult
+
+def sendMail(sender,subject,recipients,textBody,htmlBody=None,
+             ccRecipients=None,bccRecipients=None,
+             replyTo=None,attachments=None):
+    """Convenience method that simply checks/passes parameters
+        to the EmailMessage class.
+        See : http://code.google.com/intl/fr-FR/appengine/docs/python/mail/emailmessageclass.html#EmailMessage
+    """
+    def printOutput(email):
+        """dev, debugging utility method"""
+        message = ' sender : ' + email.sender
+        message += '\n subject : ' + email.subject
+        message += '\n to : ' + email.to
+        message += '\n sender : ' + email.sender
+        message += '\n body : ' + email.body
+        #if email.html is not None:
+        #    message += '\n html : ' + email.html
+        print ''
+        print ''
+        print '____________________________________________________________________'
+        print message
+        print '____________________________________________________________________'
+
+    from google.appengine.api import mail
+    email = mail.EmailMessage()
+    email.sender = sender
+    email.subject = subject
+    email.to = ",".join(recipients)
+    email.body = textBody
+
+    if htmlBody is not None:
+        email.html = htmlBody
+    if ccRecipients is not None:
+        email.cc = ",".join(ccRecipients)
+    if bccRecipients is not None:
+        email.bcc = ",".join(bccRecipients)
+    if replyTo is not None:
+        email.reply_to = replyTo
+    if attachments is not None:
+        email.attachments = attachments
+
+    email.send()
+    return True
+
+
+def sendSMS(sender,recipients,smsBody):
+    """Calls SMS provider api to send message
+        Returns result output data
+
+        TODO: handle multiple recipients array.
+                  change to be reflected on process.notification.notifiers classes.
+
+        Returns:
+            boolean (success),
+            int (MessageId),
+            int (status),
+            float (cost),
+            string (status message)
+    """
+    def printOutput(sender,recipients,smsBody):
+        """dev, debugging utility method"""
+        message = ' sender : ' + sender
+        message += '\n to : ' + recipients[0]
+        message += '\n body : ' + smsBody
+        print ''
+        print ''
+        print '____________________________________________________________________'
+        print message
+        print '____________________________________________________________________'
+
+    def parseOutput(output):
+        """Returns parsed values from output with format:
+            SUCCESS MessageId: 357958; Cost: 0.80; 0: Accepted for delivery;
+
+            Returns:
+                boolean (success),
+                int (MessageId),
+                int (status),
+                float (cost),
+                string (status message)
+        """
+        vls=output.split(';')
+        if len(vls)>=3:
+             sm=vls[0].split(' ')
+             cs=vls[1].split(':')
+             st=vls[2].split(':')
+             return str(sm[0]).find('SUCCESS')>=0,int(sm[2]),int(st[0].lstrip()),float(cs[1].lstrip()),st[1].lstrip()
+        else:
+             return False,-1,-1,0,output
+
+    url='http://www.amdtelecom.net/api/sendsms.php'
+    parameters={
+                 'from' : sender,
+                 'to' : recipients[0],
+                 'username' : settings.NOTIFICATION_SMS_PROVIDER_API_USERNAME,
+                 'password' : settings.NOTIFICATION_SMS_PROVIDER_API_PASSWORD,
+                 'text' : stringToAscii(smsBody)
+                 }
+    fetchRes=None
+    msg='util.sendSMS:logging.info'
+    try:
+         logging.info('util.sendSMS.fetchHttpRequestData')
+         msg='FETCHING SMS SEND FROM API'
+         fetchRes=fetchHttpRequestData(parameters,
+                                        url,
+                                        request_output='text',
+                                        request_method='GET')
+         if fetchRes is not None:
+              msg='PARSING SMS SEND FETCH API OUTPUT: '
+              bst,msgid,stid,cs,msg=parseOutput(fetchRes)
+              if not bst:logging.error('ERROR RETURNED FROM SMS SEND API:'+fetchRes+' - PARAMS'+str(parameters))
+              return fetchRes,bst,msgid,stid,float(cs),msg
+         else:
+              logging.error(msg+' - PARAMS'+str(parameters))
+              return (None,False,-1,-1,float(0),
+                      msg+' - PARAMS'+str(parameters))
+    except Exception, ex:
+         if fetchRes is None:fetchRes='None'
+         logging.error('ERROR '+msg+' - EXCEPTION:'+str(ex)+'- FETCH RES:'+fetchRes)
+         return (None,False,-1,-1,float(0),
+                 msg+' - PARAMS'+str(parameters)+' - FETCH RES:'+fetchRes)
+
+class Calendar:
+    @staticmethod
+    def getDayNumbers(weekDays):
+        days = weekDays.split(',')
+        daynumbers=[]
+        for i in range(0,len(days)):
+            daynumbers.append({
+                               'monday':lambda x:1,
+                               'tuesday':lambda x:2,
+                               'wednesday':lambda x:3,
+                               'thursday':lambda x:4,
+                               'friday':lambda x:5,
+                               'saturday':lambda x:6,
+                               'sunday':lambda x:7
+                               }.get(days[i], lambda x: None)(days[i]))
+        return daynumbers
+calendar = Calendar
+
+class Recurrence():
+    @staticmethod
+    def getDayNumbers(fromDate,toDate,recurEvery,refDate):
+        refDate = datetime.datetime(1900,1,1)
+        first = (fromDate-refDate).days
+        last = (toDate-refDate).days
+        days = getDayNumbers(self)
+        cur=first
+        daynumbers=[]
+        while cur<=last:
+            for i in days:
+                if cur>=last: break
+                daynumbers.append(cur+i)
+            cur+=recurEvery
+        return daynumbers
+
+    @staticmethod
+    def getFirstNextDepartureTime(fromDate,toDate,at,
+                                  returnAt,givenDateTime,
+                                  recurEvery,refDate):
+        import datetime
+        fromDateTime = datetime.datetime(fromDate.year,fromDate.month,
+                                         fromDate.day,at.hour,
+                                         at.minute)
+        toDateTime = datetime.datetime(fromDate.year,fromDate.month,
+                                       fromDate.day,returnAt.hour,
+                                       returnAt.minute)
+
+        if (fromDateTime<=givenDateTime and toDateTime>=givenDateTime):
+            daynumbers=getDayNumbers(
+                                fromDateTime,toDateTime,
+                                recurEvery,refDate)
+            givendatenum=(givenDateTime-refDate).days
+            if givendatenum in daysnumbers:
+                if givenDate.time()<=at.time():
+                    return datetime.datetime(givenDateTime.year,givenDateTime.month,
+                                             givenDateTime.day,at.hour,
+                                             at.minute)
+                elif givenDateTime.time()<=returnAt.time():
+                    return datetime.datetime(givenDateTime.year,givenDateTime.month,
+                                             givenDateTime.day,returnAt.hour,
+                                             returnAt.minute)
+            i=0
+            while daynumbers[i]<=givendatenum:i+=1
+            nextday=daynumbers[i+1]
+            return datetime.datetime(nextday.year,nextday.month,
+                                     nextday.day,at.hour,
+                                     at.minute)
+        elif fromDateTime>=givenDateTime:
+            return fromDateTime
+recurrence = Recurrence
+
+def stringToAscii(value):
+     if value is not None:
+          return (
+               value
+               .replace(u'â','a')
+               .replace(u'ä','a')
+               .replace(u'à','a')
+               .replace(u'á','a')
+               .replace(u'Â','A')
+               .replace(u'Ä','A')
+               .replace(u'Á','A')
+               .replace(u'À','A')
+               .replace(u'ç','c')
+               .replace(u'Ç','C')
+               .replace(u'ê','e')
+               .replace(u'ë','e')
+               .replace(u'é','e')
+               .replace(u'è','e')
+               .replace(u'Ê','E')
+               .replace(u'Ë','E')
+               .replace(u'É','E')
+               .replace(u'È','E')
+               .replace(u'ï','i')
+               .replace(u'î','i')
+               .replace(u'í','i')
+               .replace(u'ì','i')
+               .replace(u'Î','I')
+               .replace(u'Ï','I')
+               .replace(u'Í','I')
+               .replace(u'Ì','I')
+               .replace(u'ô','o')
+               .replace(u'ö','o')
+               .replace(u'ó','o')
+               .replace(u'ò','o')
+               .replace(u'Ô','o')
+               .replace(u'Ö','O')
+               .replace(u'Ó','O')
+               .replace(u'Ò','O')
+               .replace(u'û','u')
+               .replace(u'ü','u')
+               .replace(u'ú','u')
+               .replace(u'ù','u')
+               .replace(u'Û','U')
+               .replace(u'Ü','U')
+               .replace(u'Ú','U')
+               .replace(u'Ù','U')
+               )
+
+def replaceToAscii(value):
+     if value is not None:
+          return {
+               u'â' : lambda x: 'a',
+               u'ä' : lambda x: 'a',
+               u'à' : lambda x: 'a',
+               u'á' : lambda x: 'a',
+               u'Â' : lambda x: 'A',
+               u'Ä' : lambda x: 'A',
+               u'Á' : lambda x: 'A',
+               u'À' : lambda x: 'A',
+               u'ç' : lambda x: 'c',
+               u'Ç' : lambda x: 'C',
+               u'ê' : lambda x: 'e',
+               u'ë' : lambda x: 'e',
+               u'é' : lambda x: 'e',
+               u'è' : lambda x: 'e',
+               u'Ê' : lambda x: 'E',
+               u'Ë' : lambda x: 'E',
+               u'É' : lambda x: 'E',
+               u'È' : lambda x: 'E',
+               u'ï' : lambda x: 'i',
+               u'î' : lambda x: 'i',
+               u'í' : lambda x: 'i',
+               u'ì' : lambda x: 'i',
+               u'Î' : lambda x: 'I',
+               u'Ï' : lambda x: 'I',
+               u'Í' : lambda x: 'I',
+               u'Ì' : lambda x: 'I',
+               u'ô' : lambda x: 'o',
+               u'ö' : lambda x: 'o',
+               u'ó' : lambda x: 'o',
+               u'ò' : lambda x: 'o',
+               u'Ô' : lambda x: 'o',
+               u'Ö' : lambda x: 'O',
+               u'Ó' : lambda x: 'O',
+               u'Ò' : lambda x: 'O',
+               u'û' : lambda x: 'u',
+               u'ü' : lambda x: 'u',
+               u'ú' : lambda x: 'u',
+               u'ù' : lambda x: 'u',
+               u'Û' : lambda x: 'U',
+               u'Ü' : lambda x: 'U',
+               u'Ú' : lambda x: 'U',
+               u'Ù' : lambda x: 'U'
+               }.get(value,lambda x:value)(value)
+
+class html:
+    @staticmethod
+    def encode(value,replace_quot_by_rsquot=True,encode_space=False,encode_amp=False,replace_dblquot=False,replace_ltgt=False): 
+        value=(
+            value
+            .replace(u'\'','&#39;') # 39 27
+            .replace(u'\^','&circ;') # 94 5E
+            .replace(u'‘','&lsquo;') # 145 91
+            .replace(u'’','&rsquo;') # 146 92
+            .replace(u'“','&ldquo;') # 147 93
+            .replace(u'”','&rdquo;') # 148 94
+            .replace(u'•','&bull;') # 149 95
+            .replace(u'–','&ndash;') # 150 96
+            .replace(u'—','&mdash;') # 151 97
+            .replace(u'˜','&tilde;') # 152 98
+            .replace(u'™','&trade;') # 153 99
+            .replace(u'š','&scaron;') # 154 9A
+            .replace(u'›','&rsaquo;') # 155 9B
+            .replace(u'œ','&oelig;') # 156 9C
+            .replace(u'','&#357;') # 157 9D
+            .replace(u'ž','&#382;') # 158 9E
+            .replace(u'Ÿ','&Yuml;') # 159 9F
+            .replace(u'¡','&iexcl;') # 161 A1
+            .replace(u'¢','&cent;') # 162 A2
+            .replace(u'£','&pound;') # 163 A3
+            .replace(u'¥','&yen;') # 165 A5
+            .replace(u'¦','&brvbar;') # 166 A6
+            .replace(u'§','&sect;') # 167 A7
+            .replace(u'¨','&uml;') # 168 A8
+            .replace(u'©','&copy;') # 169 A9
+            .replace(u'ª','&ordf;') # 170 AA
+            .replace(u'«','&laquo;') # 171 AB
+            .replace(u'¬','&not;') # 172 AC
+            .replace(u'­','&shy;') # 173 AD
+            .replace(u'®','&reg;') # 174 AE
+            .replace(u'¯','&macr;') # 175 AF
+            .replace(u'°','&deg;') # 176 B0
+            .replace(u'±','&plusmn;') # 177 B1
+            .replace(u'²','&sup2;') # 178 B2
+            .replace(u'³','&sup3;') # 179 B3
+            .replace(u'´','&acute;') # 180 B4
+            .replace(u'µ','&micro;') # 181 B5
+            .replace(u'¶','&para') # 182 B6
+            .replace(u'·','&middot;') # 183 B7
+            .replace(u'¸','&cedil;') # 184 B8
+            .replace(u'¹','&sup1;') # 185 B9
+            .replace(u'º','&ordm;') # 186 BA
+            .replace(u'»','&raquo;') # 187 BB
+            .replace(u'¼','&frac14;') # 188 BC
+            .replace(u'½','&frac12;') # 189 BD
+            .replace(u'¾','&frac34;') # 190 BE
+            .replace(u'¿','&iquest;') # 191 BF
+            .replace(u'À','&Agrave;') # 192 C0
+            .replace(u'Á','&Aacute;') # 193 C1
+            .replace(u'Â','&Acirc;') # 194 C2
+            .replace(u'Ã','&Atilde;') # 195 C3
+            .replace(u'Ä','&Auml;') # 196 C4
+            .replace(u'Å','&Aring;') # 197 C5
+            .replace(u'Æ','&AElig;') # 198 C6
+            .replace(u'Ç','&Ccedil;') # 199 C7
+            .replace(u'È','&Egrave;') # 200 C8
+            .replace(u'É','&Eacute;') # 201 C9
+            .replace(u'Ê','&Ecirc;') # 202 CA
+            .replace(u'Ë','&Euml;') # 203 CB
+            .replace(u'Ì','&Igrave;') # 204 CC
+            .replace(u'Í','&Iacute;') # 205 CD
+            .replace(u'Î','&Icirc;') # 206 CE
+            .replace(u'Ï','&Iuml;') # 207 CF
+            .replace(u'Ð','&ETH;') # 208 D0
+            .replace(u'Ñ','&Ntilde;') # 209 D1
+            .replace(u'Ò','&Ograve;') # 210 D2
+            .replace(u'Ó','&Oacute;') # 211 D3
+            .replace(u'Ô','&Ocirc;') # 212 D4
+            .replace(u'Õ','&Otilde;') # 213 D5
+            .replace(u'Ö','&Ouml;') # 214 D6
+            .replace(u'×','&times;') # 215 D7
+            .replace(u'Ø','&Oslash;') # 216 D8
+            .replace(u'Ù','&Ugrave;') # 217 D9
+            .replace(u'Ú','&Uacute;') # 218 DA
+            .replace(u'Û','&Ucirc;') # 219 DB
+            .replace(u'Ü','&Uuml;') # 220 DC
+            .replace(u'Ý','&Yacute;') # 221 DD
+            .replace(u'Þ','&THORN;') # 222 DE
+            .replace(u'ß','&szlig;') # 223 DF
+            .replace(u'à','&agrave;') # 224 E0
+            .replace(u'á','&aacute;') # 225 E1
+            .replace(u'â','&acirc;') # 226 E2
+            .replace(u'ã','&atilde;') # 227 E3
+            .replace(u'ä','&auml;') # 228 E4
+            .replace(u'å','&aring;') # 229 E5
+            .replace(u'æ','&aelig;') # 230 E6
+            .replace(u'ç','&ccedil;') # 231 E7
+            .replace(u'è','&egrave;') # 232 E8
+            .replace(u'é','&eacute;') # 233 E9
+            .replace(u'ê','&ecirc;') # 234 EA
+            .replace(u'ë','&euml;') # 235 EB
+            .replace(u'ì','&igrave;') # 236 EC
+            .replace(u'í','&iacute;') # 237 ED
+            .replace(u'î','&icirc;') # 238 EE
+            .replace(u'ï','&iuml;') # 239 EF
+            .replace(u'ð','&eth;') # 240 F0
+            .replace(u'ñ','&ntilde;') # 241 F1
+            .replace(u'ò','&ograve;') # 242 F2
+            .replace(u'ó','&oacute;') # 243 F3
+            .replace(u'ô','&ocirc;') # 244 F4
+            .replace(u'õ','&otilde;') # 245 F5
+            .replace(u'ö','&ouml;') # 246 F6
+            .replace(u'÷','&divide;') # 247 F7
+            .replace(u'ø','&oslash;') # 248 F8
+            .replace(u'ù','&ugrave;') # 249 F9
+            .replace(u'ú','&uacute;') # 250 FA
+            .replace(u'û','&ucirc;') # 251 FB
+            .replace(u'ü','&uuml;') # 252 FC
+            .replace(u'ý','&yacute;') # 253 FD
+            .replace(u'þ','&thorn;') # 254 FE
+            .replace(u'ÿ','&yuml;') # 255 FF
+            )
+        if replace_ltgt:
+           value=value.replace(u'<','&lt;') # 60 3C
+           value=value.replace(u'>','&gt;') # 62 3E
+        if replace_dblquot:
+           value=value.replace(u'"','&quot;') # 34 22
+        if encode_space:
+           value=value.replace(u' ','&nbsp;') # 160 A0
+           # .replace(u' ','&curren;') # 164 A4 ??
+        if encode_amp:
+           value=value.replace(u'&','&amp;') # 38 26
+        if replace_quot_by_rsquot:
+            value=value.replace(u'\'','&rsquo;') # 146 92
+        else: value=value.replace(u'\'','&#39;') # 39 27
+        
+        return value
+    @staticmethod
+    def decode(value):
+        return (
+                value
+                .replace('&quot;',u'"') # 34 22
+                .replace('&amp;',u'&') # 38 26	
+                .replace('&#39;',u'\'') # 39 27
+                .replace('&lt;',u'<') # 60 3C
+                .replace('&gt;',u'>') # 62 3E
+                .replace('&circ;',u'^') # 94 5E
+                .replace('&lsquo;',u'‘') # 145 91
+                .replace('&rsquo;',u'’') # 146 92
+                .replace('&ldquo;',u'“') # 147 93
+                .replace('&rdquo;',u'”') # 148 94
+                .replace('&bull;',u'•') # 149 95
+                .replace('&ndash;',u'–') # 150 96
+                .replace('&mdash;',u'—') # 151 97
+                .replace('&tilde;',u'˜') # 152 98
+                .replace('&trade;',u'™') # 153 99
+                .replace('&scaron;',u'š') # 154 9A
+                .replace('&rsaquo;',u'›') # 155 9B
+                .replace('&oelig;',u'œ') # 156 9C
+                .replace('&#357;',u'') # 157 9D
+                .replace('&#382;',u'ž') # 158 9E
+                .replace('&Yuml;',u'Ÿ') # 159 9F
+                .replace('&nbsp;',u' ') # 160 A0
+                .replace('&iexcl;',u'¡') # 161 A1
+                .replace('&cent;',u'¢') # 162 A2
+                .replace('&pound;',u'£') # 163 A3
+                .replace('&curren;',u' ') # 164 A4
+                .replace('&yen;',u'¥') # 165 A5
+                .replace('&brvbar;',u'¦') # 166 A6
+                .replace('&sect;',u'§') # 167 A7
+                .replace('&uml;',u'¨') # 168 A8
+                .replace('&copy;',u'©') # 169 A9
+                .replace('&ordf;',u'ª') # 170 AA
+                .replace('&laquo;',u'«') # 171 AB
+                .replace('&not;',u'¬') # 172 AC
+                .replace('&shy;',u'­') # 173 AD
+                .replace('&reg;',u'®') # 174 AE
+                .replace('&macr;',u'¯') # 175 AF
+                .replace('&deg;',u'°') # 176 B0
+                .replace('&plusmn;',u'±') # 177 B1
+                .replace('&sup2;',u'²') # 178 B2
+                .replace('&sup3;',u'³') # 179 B3
+                .replace('&acute;',u'´') # 180 B4
+                .replace('&micro;',u'µ') # 181 B5
+                .replace('&para',u'¶') # 182 B6
+                .replace('&middot;',u'·') # 183 B7
+                .replace('&cedil;',u'¸') # 184 B8
+                .replace('&sup1;',u'¹') # 185 B9
+                .replace('&ordm;',u'º') # 186 BA
+                .replace('&raquo;',u'»') # 187 BB
+                .replace('&frac14;',u'¼') # 188 BC
+                .replace('&frac12;',u'½') # 189 BD
+                .replace('&frac34;',u'¾') # 190 BE
+                .replace('&iquest;',u'¿') # 191 BF
+                .replace('&Agrave;',u'À') # 192 C0
+                .replace('&Aacute;',u'Á') # 193 C1
+                .replace('&Acirc;',u'Â') # 194 C2
+                .replace('&Atilde;',u'Ã') # 195 C3
+                .replace('&Auml;',u'Ä') # 196 C4
+                .replace('&Aring;',u'Å') # 197 C5
+                .replace('&AElig;',u'Æ') # 198 C6
+                .replace('&Ccedil;',u'Ç') # 199 C7
+                .replace('&Egrave;',u'È') # 200 C8
+                .replace('&Eacute;',u'É') # 201 C9
+                .replace('&Ecirc;',u'Ê') # 202 CA
+                .replace('&Euml;',u'Ë') # 203 CB
+                .replace('&Igrave;',u'Ì') # 204 CC
+                .replace('&Iacute;',u'Í') # 205 CD
+                .replace('&Icirc;',u'Î') # 206 CE
+                .replace('&Iuml;',u'Ï') # 207 CF
+                .replace('&ETH;',u'Ð') # 208 D0
+                .replace('&Ntilde;',u'Ñ') # 209 D1
+                .replace('&Ograve;',u'Ò') # 210 D2
+                .replace('&Oacute;',u'Ó') # 211 D3
+                .replace('&Ocirc;',u'Ô') # 212 D4
+                .replace('&Otilde;',u'Õ') # 213 D5
+                .replace('&Ouml;',u'Ö') # 214 D6
+                .replace('&times;',u'×') # 215 D7
+                .replace('&Oslash;',u'Ø') # 216 D8
+                .replace('&Ugrave;',u'Ù') # 217 D9
+                .replace('&Uacute;',u'Ú') # 218 DA
+                .replace('&Ucirc;',u'Û') # 219 DB
+                .replace('&Uuml;',u'Ü') # 220 DC
+                .replace('&Yacute;',u'Ý') # 221 DD
+                .replace('&THORN;',u'Þ') # 222 DE
+                .replace('&szlig;',u'ß') # 223 DF
+                .replace('&agrave;',u'à') # 224 E0
+                .replace('&aacute;',u'á') # 225 E1
+                .replace('&acirc;',u'â') # 226 E2
+                .replace('&atilde;',u'ã') # 227 E3
+                .replace('&auml;',u'ä') # 228 E4
+                .replace('&aring;',u'å') # 229 E5
+                .replace('&aelig;',u'æ') # 230 E6
+                .replace('&ccedil;',u'ç') # 231 E7
+                .replace('&egrave;',u'è') # 232 E8
+                .replace('&eacute;',u'é') # 233 E9
+                .replace('&ecirc;',u'ê') # 234 EA
+                .replace('&euml;',u'ë') # 235 EB
+                .replace('&igrave;',u'ì') # 236 EC
+                .replace('&iacute;',u'í') # 237 ED
+                .replace('&icirc;',u'î') # 238 EE
+                .replace('&iuml;',u'ï') # 239 EF
+                .replace('&eth;',u'ð') # 240 F0
+                .replace('&ntilde;',u'ñ') # 241 F1
+                .replace('&ograve;',u'ò') # 242 F2
+                .replace('&oacute;',u'ó') # 243 F3
+                .replace('&ocirc;',u'ô') # 244 F4
+                .replace('&otilde;',u'õ') # 245 F5
+                .replace('&ouml;',u'ö') # 246 F6
+                .replace('&divide;',u'÷') # 247 F7
+                .replace('&oslash;',u'ø') # 248 F8
+                .replace('&ugrave;',u'ù') # 249 F9
+                .replace('&uacute;',u'ú') # 250 FA
+                .replace('&ucirc;',u'û') # 251 FB
+                .replace('&uuml;',u'ü') # 252 FC
+                .replace('&yacute;',u'ý') # 253 FD
+                .replace('&thorn;',u'þ') # 254 FE
+                .replace('&yuml;',u'ÿ') # 255 FF
+               )

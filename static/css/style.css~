@@ -1,0 +1,26 @@
+/* 
+  SPECIFIC SITE STRUCTURE 
+    (COMMON STRUCTURE IN base.css)
+*/
+
+body {
+    background-color: white;
+    font-family: Helvetica, Verdana, Sans-Serif;
+    font-size: 13px;
+    color: #EEFEFF;
+}
+
+#wrapper, wrapper {
+	/* use .gradient in place in wrapper or #wrapper and remove these styles */
+    /* classical */
+    background-image: url("/pages/healing/images/mainBG.png");
+    background-repeat: repeat-x;
+    background-color: #DEAB00;
+    /* gradient */
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #000001), color-stop(1, #451100));
+    background-image: -moz-linear-gradient(top,#FFFFFF, #DEAB00);
+    filter:progid:DXImageTransform.Microsoft.Gradient(GradientType =3, startColorstr=#000001,endColorstr=#451100);
+    /* other */
+    min-width: 350px;
+}
+

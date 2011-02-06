@@ -1,0 +1,116 @@
+/* 
+  SPECIFIC SITE STRUCTURE 
+    (COMMON STRUCTURE IN base.css)
+*/
+
+body {
+    background-color: white;
+    font-family: Helvetica, Verdana, Sans-Serif;
+    font-size: 13px;
+    color: #001011;
+}
+
+#wrapper, wrapper {
+	/* use .gradient in place in wrapper or #wrapper and remove these styles */
+    /* classical */
+    background-image: url("/pages/healing/images/mainBG.png");
+    background-repeat: repeat-x;
+    background-color: transparent;
+    /* gradient */
+    background-image: gradient(linear, left top, left bottom, color-stop(0, transparent), color-stop(1, rgb(255,255,255)));
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, transparent), color-stop(1, rgb(255,255,255)));
+    background-image: -moz-linear-gradient(top, transparent, rgb(255,255,255));
+    filter:progid:DXImageTransform.Microsoft.Gradient(GradientType =3, startColorstr=transparent,endColorstr=rgb(255,255,255));
+    /* other */
+    min-width: 350px;
+}
+
+/* HEADINGS */
+h1, h2, h3, h4, h5, h6 {
+    /*class: .font-color_light-blue-green */
+    color: #101011;
+}
+
+a {
+    color: #111011;
+}
+
+table {
+  width:100%;
+}
+table tbody tr th {
+  text-align: left;
+  text-indent: 2%;
+}
+table tbody tr td {
+  text-indent:5%;
+  font-size: 0.9em;
+}
+
+code {
+  font-size:0.87em;
+}
+
+label {
+	float:left;
+	min-width: 10em;
+}
+#rbl span, #rbl input {
+	float:right;
+}
+label:first-letter, #rbl span:first-letter {
+	font-weight:bold;
+	text-transform:capitalize;
+	font-size: 1.1em;
+}
+input, select, textarea {
+	border-width: 2px;
+}
+
+hr {
+  clear:both;
+  margin: 5% 0;
+}
+#command_json, #command_form {
+  background-color: black;
+  color: whitesmoke;
+}
+#command_json  {
+  font-size:0.90em;
+}
+#command_form code {
+  margin-left: 5%;
+  display:block;
+  font-size:0.95em;
+}
+
+#command_fieldset div {
+  clear:both;
+}
+#command_fieldset h3 {
+  text-align:center;
+}
+#command_fieldset h3:first-letter {
+  text-transform:capitalize;
+}
+
+input[type="submit"], input[type="button"] {
+    /* classical */
+    background-image: url("/pages/healing/images/mainBG.png");
+    background-repeat: repeat-x;
+    background-color: #111011;
+    /* gradient */
+    background-image: gradient(linear, left top, left bottom, color-stop(0, #451100), color-stop(1, #111011)));
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #451100), color-stop(1, #111011)));
+    background-image: -moz-linear-gradient(top, #451100, #111011);
+    filter:progid:DXImageTransform.Microsoft.Gradient(GradientType =3, startColorstr=#451100,endColorstr=#111011);
+    /* other */
+	font-size:1.05em;
+	margin-right:4.5em;
+	min-width:10em;
+    color: #EEFEFF;
+}
+pre {
+    color: #EEFEFF;
+}
+

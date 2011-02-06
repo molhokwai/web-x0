@@ -1,0 +1,68 @@
+<html>
+    <head>
+        <title>molhokwai: web 3.0 paradigm developments</title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="keywords" content="development dynamic, ajax, app, embedding, web, network, connectedness, paradigm, 3.0, implementation, connect, connection, test" />
+        <meta name="description" content="molhokwai devevelopments: web 3.0, network, connectedness paradigm implementation development dynamic ajax app embedding." />
+        <meta name="google-site-verification" content="r0Pfq2q9SK7Pk9gkh1NnbsV28-mQoD8LoIGOeUhfer8" />
+        
+		    <!-- scripts_and_styles -->
+        <style type="text/css">
+            @import "/static/css/base.css";
+            @import "/static/themes/default/css/style.css";
+        </style>
+		    <script id="jquery" 		          type="text/javascript"  src="/static/js/components/jquery/jquery.js"></script>
+		    <script id="jquery" 		          type="text/javascript"  src="/static/js/components/jquery/jquery.use.js"></script>
+		    <!-- !!! script id "jquery.madaa" is required-->
+		    <script id="jquery.madaa"         type="text/javascript"  src="/static/js/net.molhokwai/molhokwai.ajax.app/jQuery.madaa.js"></script>
+		    <script>
+		        $(document).ready(function(){
+		            /* OPTIONS:
+		               -------
+                    madaa.options.api.url.base = 'http://web-x0.appspot.com/';
+                    madaa.options.api.url.params = 'http://web-x0.appspot.com/...';
+                    madaa.options.html.container = '#content';
+                    madaa.options.html.title = '...';
+                    madaa.options.html.text = '...';
+                    madaa.options.html.labels.text_command = '...';
+                    madaa.options.html.labels.create = '...';
+                    madaa.options.html.labels.read = '...';
+                    madaa.options.html.labels.update = '...';
+                    madaa.options.html.labels.delete = '...';
+                    madaa.options.html.labels.examples = '...';
+                    madaa.options.html.labels.submit = '...';
+		            */
+		            $('#content').madaa(madaa.options);
+		        });
+		    </script>
+		    
+		    <noscript>YOU DO NOT HAVE JAVASCRIPT ENABLED. THIS APPLICATION MIGHT NOT WORK PROPERLY.</noscript>
+    </head>
+    <body class="body">
+        <div id="wrapper" class="width40pc margt5pc marg-auto padtb1pc padlr2pc border-std gradient">
+
+            <div id="content">
+              &nbsp;
+            </div>
+     
+        </div>
+
+
+        <script type="text/javascript" id="tracking_src">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+        </script>
+        <script type="text/javascript" id="tracking_process">
+            try {
+              var pageTracker = _gat._getTracker("UA-5101967-1");
+              pageTracker._initData();
+              pageTracker._trackPageview();
+            }
+            catch(e){
+            }
+        </script>
+        <!-- end #tracking -->
+    </body>
+</html>
+

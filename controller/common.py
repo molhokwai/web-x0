@@ -1,0 +1,39 @@
+#!/usr/bin/python2.5
+#
+import os
+from google.appengine.ext.webapp import template
+import cgi
+
+#google appengine
+from google.appengine.api import users
+import gdata.alt.appengine
+
+import urllib
+from appengine_utilities import sessions
+
+import settings
+
+import controller
+
+def outputTemplate(requestHandler, template_values, module):
+    """Sets required string code template values and outputs
+
+    Args:
+      requesthandler: the caller
+      template_values: the template values dict
+      module: the current module
+
+    Returns:
+      None
+
+    """
+    path = os.path.dirname(__file__).replace('/controller', '').replace('\\controller', '') + '/view/templates/' + module +'.htm'
+    requestHandler.response.out.write(template.render(path, template_values))
+
+def getHostName():
+    port = os.environ['SERVER_PORT']
+    if port and port != '80':
+      return '%s:%s' % (os.environ['SERVER_NAME'], port)
+    else:
+      return os.environ['SERVER_NAME']
+

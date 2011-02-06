@@ -1,0 +1,31 @@
+8
+
+dir
+124
+http://subversion.assembla.com/svn/molhokwai_net/app/static/js/components
+http://subversion.assembla.com/svn/molhokwai_net
+
+
+
+2009-10-23T20:04:33.669351Z
+1
+herve.mayou
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+6ef0b02c-9ec0-4219-951d-d0e470784b5a
+
+jquery
+dir
+

@@ -1,0 +1,23 @@
+application: web-x0
+version: 002
+runtime: python
+api_version: 1
+
+handlers:
+- url: /static
+  static_dir: static
+- url: /pub
+  static_dir: pub
+- url: /favicon.ico
+  static_files: static/images/favicon.ico
+  upload: static/images/favicon.ico
+
+- url: /remote_api
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+
+- url: /process.*
+  script: process/dispatcher.py
+
+- url: /.*
+  script: process/dispatcher.py
+
